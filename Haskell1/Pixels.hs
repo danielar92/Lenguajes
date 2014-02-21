@@ -1,6 +1,6 @@
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
-import Data.List(transpose)
+import Data.List(transpose,unlines)
 
 --module Pixels (...) where
 
@@ -106,11 +106,12 @@ fontBitmap =
 type Pixels = [String]
 
 -- Transformamos el caracter dado, buscamos su numero asci y con eso lo buscamos en fontBitmap
-lookupLetter :: Char -> [Int]
+--lookupLetter :: Char -> [Int]
 lookupLetter letter
           | pos>=94 || pos < 0 = [0xFF,0xFF,0xFF,0xFF]
           | otherwise = (fontBitmap !! pos)
           where pos = ord letter -32
+
 
 -- Con un index, chequeamos cual es True y cual es False. Colocando los * y ' ' respectivos.
 transform :: Bits a => a -> String
@@ -121,11 +122,14 @@ transform x = map toChar [0..6]
 
 -- Invertimos los elementos en la lista, y usamos los procedimientos anteriores para imprimir
 -- la secuencia correspondiente a el caracter introducido.
-font :: Char  -> Pixels
+--font :: Char  -> Pixels
 font letter = transpose $ map transform (lookupLetter letter)
 
+--unlines toma una lista de cadenas y las une utilizando un '\n'
+pixelsToString :: Pixels -> String
+pixelsToString x = unlines x
 
-pixelsToString = undefined
+
 pixelListToPixels = undefined
 pixelListToString = undefined
 
