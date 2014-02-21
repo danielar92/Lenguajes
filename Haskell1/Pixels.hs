@@ -1,6 +1,6 @@
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
-import Data.List(transpose,unlines)
+import Data.List(transpose,unlines,zip,foldr)
 
 --module Pixels (...) where
 
@@ -122,15 +122,17 @@ transform x = map toChar [0..6]
 
 -- Invertimos los elementos en la lista, y usamos los procedimientos anteriores para imprimir
 -- la secuencia correspondiente a el caracter introducido.
---font :: Char  -> Pixels
+font :: Char  -> Pixels
 font letter = transpose $ map transform (lookupLetter letter)
 
 --unlines toma una lista de cadenas y las une utilizando un '\n'
 pixelsToString :: Pixels -> String
 pixelsToString x = unlines x
 
+-- unimos todos los elementos de la lista de entrada con una cadena vacia entre ellos
+pixelListToPixels :: [Pixels] -> Pixels
+pixelListToPixels list = foldr(\x y -> x ++ [""] ++ y) [] list
 
-pixelListToPixels = undefined
 pixelListToString = undefined
 
 concatPixels = undefined
