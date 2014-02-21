@@ -133,7 +133,8 @@ pixelsToString x = unlines x
 pixelListToPixels :: [Pixels] -> Pixels
 pixelListToPixels list = foldr(\x y -> x ++ [""] ++ y) [] list
 
-pixelListToString = undefined
+pixelListToString:: [Pixels] -> String
+pixelListToString list = unlines (map pixelsToString list)
 
 concatPixels = undefined
 messageToPixels = undefined
