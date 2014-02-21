@@ -136,10 +136,35 @@ pixelListToString = undefined
 concatPixels = undefined
 messageToPixels = undefined
 
-up = undefined
-down = undefined
-left = undefined
-right = undefined
-upsideDown = undefined
-backwards = undefined
-negative = undefined
+up :: Pixels -> Pixels
+up (x:xs) = xs ++ [x]
+
+down :: Pixels -> Pixels
+down x = (reverse . up . reverse) x
+
+move :: String -> String
+move (x:xs) = xs ++ [x]
+
+left :: Pixels -> Pixels
+left x = map move x
+
+move1 :: String -> String
+move1 x = (reverse . move . reverse) x
+
+right :: Pixels -> Pixels
+right x = map move1 x
+
+upsideDown :: Pixels -> Pixels
+upsideDown x = reverse x
+
+backwards :: Pixels -> Pixels
+backwards x = map reverse x
+
+--Cambiar por recursion de cola
+change :: String -> String
+change [] = []
+change (x:xs) = if x == '*' then ' ' : change xs
+                            else '*' : change xs
+          
+negative :: Pixels -> Pixels
+negative x = map change x
