@@ -1,6 +1,6 @@
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
-import Data.List(transpose,unlines,zip,foldr)
+import Data.List(transpose,unlines,zipWith,foldr)
 
 --module Pixels (...) where
 
@@ -106,7 +106,7 @@ fontBitmap =
 type Pixels = [String]
 
 -- Transformamos el caracter dado, buscamos su numero asci y con eso lo buscamos en fontBitmap
---lookupLetter :: Char -> [Int]
+lookupLetter :: Char -> [Int]
 lookupLetter letter
           | pos>=94 || pos < 0 = [0xFF,0xFF,0xFF,0xFF]
           | otherwise = (fontBitmap !! pos)
@@ -133,11 +133,18 @@ pixelsToString x = unlines x
 pixelListToPixels :: [Pixels] -> Pixels
 pixelListToPixels list = foldr(\x y -> x ++ [""] ++ y) [] list
 
+-- Mapeamos la lista introducida con la funcion pixelsToString para transformar a String todos los
+-- elemenos en ella. Y luego pixelToString para lo obvio.
 pixelListToString:: [Pixels] -> String
-pixelListToString list = unlines (map pixelsToString list)
+pixelListToString list = pixelsToString (map pixelsToString list)
 
-concatPixels = undefined
-messageToPixels = undefined
+-- Como list es una lista de listas,unimos las listas internas con zipWith, y luego con foldr
+-- unimos todo en un solo Pixels
+concatPixels :: [Pixels] -> Pixels
+concatPixels list = foldr (\x y -> zipWith(++) x y ) ["", "", "", "", "", "", "", ""] list
+
+--messageToPixels :: String -> Pixels
+--messageToPixels list = foldr (\x y -> zipWith() x y ) ["", "", "", "", "", "", "", ""] (map font list)
 
 up = undefined
 down = undefined
