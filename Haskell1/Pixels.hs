@@ -143,9 +143,9 @@ pixelListToString list = pixelsToString (map pixelsToString list)
 concatPixels :: [Pixels] -> Pixels
 concatPixels list = foldr (\x y -> zipWith(++) x y ) ["", "", "", "", "", "", "", ""] list
 
---messageToPixels :: String -> Pixels
---messageToPixels list = foldr (\x y -> zipWith() x y ) ["", "", "", "", "", "", "", ""] (map font list)
-
+messageToPixels :: String -> Pixels
+messageToPixels list = foldr (\x y -> zipWith(whiteSpace) x y ) ["", "", "", "", "", "", "", ""] (map font list)
+  where whiteSpace x y  =x ++ [' '] ++ y
 up :: Pixels -> Pixels
 up (x:xs) = xs ++ [x]
 
@@ -175,6 +175,6 @@ change :: String -> String
 change [] = []
 change (x:xs) = if x == '*' then ' ' : change xs
                             else '*' : change xs
-          
+
 negative :: Pixels -> Pixels
 negative x = map change x
