@@ -1,9 +1,8 @@
+module Pixels  where
+
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
 import Data.List(transpose)
-
---module Pixels (...) where
-
 fontBitmap :: [[Int]]
 fontBitmap =
   [
