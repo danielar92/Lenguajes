@@ -1,6 +1,6 @@
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
-import Data.List(transpose,unlines,zipWith,foldr)
+import Data.List(transpose)
 
 --module Pixels (...) where
 
@@ -170,11 +170,12 @@ upsideDown x = reverse x
 backwards :: Pixels -> Pixels
 backwards x = map reverse x
 
---Cambiar por recursion de cola
 change :: String -> String
 change [] = []
-change (x:xs) = if x == '*' then ' ' : change xs
-                            else '*' : change xs
+change x = dale x []
+    where dale [] f = reverse f
+          dale (x:xs) f = if x == ' ' then dale xs ('*':f)
+                                      else dale xs (' ':f)
 
 negative :: Pixels -> Pixels
 negative x = map change x
