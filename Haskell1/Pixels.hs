@@ -1,8 +1,17 @@
+{-|
+Module      : Pixels
+Description : Módulo que permite pasar un texto y transformarlo en Pixeles
+                de LED Displays.
+Copyright   : Daniela Rodríguez, 2014
+              Patrick Rengifo, 2014
+-}
 module Pixels  where
 
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
 import Data.List(transpose)
+
+-- | 'fontBitmap' es el diccionario de caracteres escritos en enteros hexadecimales
 fontBitmap :: [[Int]]
 fontBitmap =
   [
