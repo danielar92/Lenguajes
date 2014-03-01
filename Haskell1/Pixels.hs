@@ -1,3 +1,5 @@
+-- Daniela Rodríguez 09-10735
+-- Patrick Rengifo 09-10703
 module Pixels  where
 
 import Data.Char (ord)
@@ -104,7 +106,7 @@ fontBitmap =
 
 type Pixels = [String]
 
--- Transformamos el caracter dado, buscamos su numero asci y con eso lo buscamos en fontBitmap
+-- | Transformamos el caracter dado, buscamos su numero asci y con eso lo buscamos en fontBitmap
 lookupLetter :: Char -> [Int]
 lookupLetter letter
           | pos>=94 || pos < 0 = [0xFF,0xFF,0xFF,0xFF]
@@ -112,33 +114,33 @@ lookupLetter letter
           where pos = ord letter -32
 
 
--- Con un index, chequeamos cual es True y cual es False. Colocando los * y ' ' respectivos.
+-- | Con un index, chequeamos cual es True y cual es False. Colocando los * y ' ' respectivos.
 transform :: Bits a => a -> String
 transform x = map toChar [0..6]
   where toChar y = if testBit x y
                    then '*'
                    else ' '
 
--- Invertimos los elementos en la lista, y usamos los procedimientos anteriores para imprimir
+-- | Invertimos los elementos en la lista, y usamos los procedimientos anteriores para imprimir
 -- la secuencia correspondiente a el caracter introducido.
 font :: Char  -> Pixels
 font letter = transpose $ map transform (lookupLetter letter)
 
---unlines toma una lista de cadenas y las une utilizando un '\n'
+-- |unlines toma una lista de cadenas y las une utilizando un '\n'
 pixelsToString :: Pixels -> String
 pixelsToString x = unlines x
 
--- unimos todos los elementos de la lista de entrada con una cadena vacia entre ellos
+-- | unimos todos los elementos de la lista de entrada con una cadena vacia entre ellos
 pixelListToPixels :: [Pixels] -> Pixels
 pixelListToPixels list = foldr(\x y -> x ++ [""] ++ y) [] list
 
--- Mapeamos la lista introducida con la funcion pixelsToString para transformar a String todos los
+-- | Mapeamos la lista introducida con la funcion pixelsToString para transformar a String todos los
 -- elemenos en ella. Y luego pixelToString para lo obvio.
 pixelListToString:: [Pixels] -> String
 pixelListToString list = pixelsToString (map pixelsToString list)
 
--- Como list es una lista de listas,unimos las listas internas con zipWith, y luego con foldr
--- unimos todo en un solo Pixels
+-- | Como list es una lista de listas,unimos las listas internas con zipWith, y luego con foldr
+-- | unimos todo en un solo Pixels
 concatPixels :: [Pixels] -> Pixels
 concatPixels list = foldr (\x y -> zipWith(++) x y ) ["", "", "", "", "", "", "", ""] list
 
