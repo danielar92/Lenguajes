@@ -5,7 +5,22 @@ Description : Módulo que permite pasar un texto y transformarlo en Pixeles
 Copyright   : Daniela Rodríguez, 2014
               Patrick Rengifo, 2014
 -}
-module Pixels  where
+module Pixels
+(font,
+pixelsToString,
+pixelListToPixels,
+pixelListToString,
+concatPixels,
+messageToPixels,
+up,
+down,
+left,
+right,
+upsideDown,
+backwards,
+negative,
+)
+where
 
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
@@ -113,77 +128,90 @@ fontBitmap =
 
 type Pixels = [String]
 
--- | Transformamos el caracter dado, buscamos su numero asci y con eso lo buscamos en fontBitmap
+-- | Transformamos el caracter dado, buscamos su numero asci y con eso
+-- lo buscamos en fontBitmap
 lookupLetter :: Char -> [Int]
 lookupLetter letter
           | pos>=94 || pos < 0 = [0xFF,0xFF,0xFF,0xFF]
           | otherwise = (fontBitmap !! pos)
-          where pos = ord letter -32
+          where pos = ord letter - 32
 
 
--- | Con un index, chequeamos cual es True y cual es False. Colocando los * y ' ' respectivos.
+-- | Con un index, chequeamos cual es True y cual es False. Colocando
+-- los * y ' ' respectivos.
 transform :: Bits a => a -> String
 transform x = map toChar [0..6]
   where toChar y = if testBit x y
                    then '*'
                    else ' '
 
--- | Invertimos los elementos en la lista, y usamos los procedimientos anteriores para imprimir
--- la secuencia correspondiente a el caracter introducido.
+-- | Invertimos los elementos en la lista, y usamos los procedimientos
+-- anteriores para imprimir la secuencia correspondiente a el caracter
+-- introducido.
 font :: Char  -> Pixels
 font letter = transpose $ map transform (lookupLetter letter)
 
 -- |unlines toma una lista de cadenas y las une utilizando un '\n'
 pixelsToString :: Pixels -> String
-pixelsToString x = unlines x
+pixelsToString = unlines
 
--- | unimos todos los elementos de la lista de entrada con una cadena vacia entre ellos
+-- | Unimos todos los elementos de la lista de entrada con una cadena
+-- vacia entre ellos
 pixelListToPixels :: [Pixels] -> Pixels
-pixelListToPixels list = foldr(\x y -> x ++ [""] ++ y) [] list
+pixelListToPixels = foldr(\x y -> x ++ [""] ++ y) []
 
--- | Mapeamos la lista introducida con la funcion pixelsToString para transformar a String todos los
--- elemenos en ella. Y luego pixelToString para lo obvio.
-pixelListToString:: [Pixels] -> String
-pixelListToString list = pixelsToString (map pixelsToString list)
+-- | Hacemos composición de funciones. Primero pixelsListToPixels
+-- para tener un solo pixel, y luego pixelsToString.
 
--- | Como list es una lista de listas,unimos las listas internas con zipWith, y luego con foldr
--- | unimos todo en un solo Pixels
+pixelListToString :: [Pixels] -> String
+pixelListToString = pixelsToString . pixelListToPixels
+
+
+-- | Como list es una lista de listas,unimos las listas internas con
+-- zipWith, y luego con foldr | unimos todo en un solo Pixels
 concatPixels :: [Pixels] -> Pixels
-concatPixels list = foldr (\x y -> zipWith(++) x y ) ["", "", "", "", "", "", "", ""] list
+concatPixels list = foldr (zipWith(++)) ["", "", "", "", "", "", "", ""] list
 
+-- | Mapeamos todo el string introducido con font para tenerlos en tipo
+-- pixel. Unimos con foldr y zipWith usando whiteSpace, que agrega el espacio
+-- en blanco entre las letras a imprimir.
 messageToPixels :: String -> Pixels
-messageToPixels list = foldr (\x y -> zipWith(whiteSpace) x y ) ["", "", "", "", "", "", "", ""] (map font list)
-  where whiteSpace x y  =x ++ [' '] ++ y
+messageToPixels = foldr (zipWith whiteSpace)
+                       ["", "", "", "", "", "", "", ""]
+                       . map font
+  where whiteSpace x y = x ++ [' '] ++ y
+
+
+-- Efectos especiales
+
+-- | A la cola de pixeles le adjuntamos la 'cabeza' de la misma al final
 up :: Pixels -> Pixels
 up (x:xs) = xs ++ [x]
 
+-- | Al último elemento de los pixels, le adjuntamos el resto de la lista
 down :: Pixels -> Pixels
-down x = (reverse . up . reverse) x
+down x = last x:(init x)
 
-move :: String -> String
-move (x:xs) = xs ++ [x]
-
+-- | Mapeamos al pixels con la función move, que coloca la 'cabeza' al
+-- final del string.
 left :: Pixels -> Pixels
 left x = map move x
+  where move(x:xs) = xs ++[x]
 
-move1 :: String -> String
-move1 x = (reverse . move . reverse) x
-
+-- | Igual que con left, mapeamos colocando el último elemento al principio
 right :: Pixels -> Pixels
-right x = map move1 x
+right = map (\x -> last x:(init x))
 
+-- | Colocamos al revés el pixels con reverse.
 upsideDown :: Pixels -> Pixels
-upsideDown x = reverse x
+upsideDown = reverse
 
+-- | Mapeamos cada elemento con reverse.
 backwards :: Pixels -> Pixels
-backwards x = map reverse x
+backwards = map reverse
 
-change :: String -> String
-change [] = []
-change x = dale x []
-    where dale [] f = reverse f
-          dale (x:xs) f = if x == ' ' then dale xs ('*':f)
-                                      else dale xs (' ':f)
-
+-- | Mapeamos el mapeo con la función x, que invierte asteriscos por espacios
 negative :: Pixels -> Pixels
-negative x = map change x
+negative = map (map x)
+  where x '*' = ' '
+        x ' ' = '*'
