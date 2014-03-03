@@ -1,0 +1,5 @@
+Name: Pixels
+Version: 1.0.0
+Author: Daniela Rodríguez, Patrick Rengifo
+Synopsis: Módulo que permite pasar un texto y transformarlo en Pixeles
+                de LED Displays.
