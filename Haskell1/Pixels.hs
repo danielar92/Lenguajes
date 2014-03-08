@@ -188,6 +188,7 @@ messageToPixels = foldr (zipWith whiteSpace)
 -- Esto se realiza al concatenar la 'cabeza' del String al final.
 up :: Pixels -> Pixels
 up (x:xs) = xs ++ [x]
+--up (x:xs) = reverse(x : (reverse xs))
 
 -- | Desplaza una fila del Pixel hacia abajo
 -- Esto se realiza usando el último elemento de los pixels, 
@@ -200,7 +201,8 @@ down x = last x:(init x)
 -- final del string.
 left :: Pixels -> Pixels
 left x = map move x
-  where move(x:xs) = xs ++[x]
+    where move(x:xs) = xs ++ [x]
+--  where move(x:xs) = reverse(x : (reverse xs)          
 
 -- | Desplaza una columan del Pixel hacia la derecha.
 -- Igual que con left, mapeamos colocando el último elemento al principio
