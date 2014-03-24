@@ -27,7 +27,7 @@ import Data.Bits(testBit,Bits)
 import Data.List(transpose)
 
 -- | 'fontBitmap' es el diccionario de caracteres escritos en enteros hexadecimales
-fontBitmap :: Bits a,Num a =>[[Int]]
+fontBitmap :: (Num a, Bits a) => [[a]]
 fontBitmap =
   [
     [ 0x00, 0x00, 0x00, 0x00, 0x00 ], --  (Space)
