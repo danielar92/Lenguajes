@@ -6,28 +6,28 @@ Copyright   : Daniela Rodríguez, 2014
               Patrick Rengifo, 2014
 -}
 module Pixels
-(font,
-pixelsToString,
-pixelListToPixels,
-pixelListToString,
-concatPixels,
-messageToPixels,
-up,
-down,
-left,
-right,
-upsideDown,
-backwards,
-negative,
-)
-where
+       (
+         font
+       , pixelsToString
+       , pixelListToPixels
+       , pixelListToString
+       , concatPixels
+       , messageToPixels
+       , up
+       , down
+       , left
+       , right
+       , upsideDown
+       , backwards
+       , negative
+       ) where
 
 import Data.Char (ord)
 import Data.Bits(testBit,Bits)
 import Data.List(transpose)
 
 -- | 'fontBitmap' es el diccionario de caracteres escritos en enteros hexadecimales
-fontBitmap :: [[Int]]
+fontBitmap :: (Num a, Bits a) => [[a]]
 fontBitmap =
   [
     [ 0x00, 0x00, 0x00, 0x00, 0x00 ], --  (Space)
@@ -128,8 +128,8 @@ fontBitmap =
 
 type Pixels = [String]
 
--- | Transformamos el caracter dado, buscamos su numero asci y con eso
--- lo buscamos en fontBitmap
+-- | Buscamos el elemento en la tabla de fontBitmap utilizando
+-- su posición en la tabla ascii.
 lookupLetter :: Char -> [Int]
 lookupLetter letter
           | pos>=94 || pos < 0 = [0xFF,0xFF,0xFF,0xFF]
@@ -137,21 +137,22 @@ lookupLetter letter
           where pos = ord letter - 32
 
 
--- | Con un index, chequeamos cual es True y cual es False. Colocando
--- los * y ' ' respectivos.
+-- | Dada la representación binaria de un número, la transformamos
+-- a una cadena de caracteres con '*' y ' '
 transform :: Bits a => a -> String
 transform x = map toChar [0..6]
   where toChar y = if testBit x y
                    then '*'
                    else ' '
 
--- | Invertimos los elementos en la lista, y usamos los procedimientos
--- anteriores para imprimir la secuencia correspondiente a el caracter
--- introducido.
+-- | Usamos lookupLetter para encontrar el elemento en fontBitmap
+-- y luego con transform lo transformamos a una cadena de caracteres
+-- por último buscamos la transpuesta para su posterior representación.
 font :: Char  -> Pixels
 font letter = transpose $ map transform (lookupLetter letter)
 
--- |unlines toma una lista de cadenas y las une utilizando un '\n'
+-- | Toma una lista de cadenas y las une utilizando un '\n'
+-- a través de la función unlines
 pixelsToString :: Pixels -> String
 pixelsToString = unlines
 
@@ -170,7 +171,7 @@ pixelListToString = pixelsToString . pixelListToPixels
 -- | Como list es una lista de listas,unimos las listas internas con
 -- zipWith, y luego con foldr | unimos todo en un solo Pixels
 concatPixels :: [Pixels] -> Pixels
-concatPixels list = foldr (zipWith(++)) ["", "", "", "", "", "", "", ""] list
+concatPixels =  foldr (zipWith(++)) ["", "", "", "", "", "", "", ""]
 
 -- | Mapeamos todo el string introducido con font para tenerlos en tipo
 -- pixel. Unimos con foldr y zipWith usando whiteSpace, que agrega el espacio
@@ -187,10 +188,10 @@ messageToPixels = foldr (zipWith whiteSpace)
 -- | Desplaza una fila del Pixel hacia arriba.
 -- Esto se realiza al concatenar la 'cabeza' del String al final.
 up :: Pixels -> Pixels
-up (x:xs) = xs ++ [x]
+up (x:xs) = reverse(x : (reverse xs))
 
 -- | Desplaza una fila del Pixel hacia abajo
--- Esto se realiza usando el último elemento de los pixels, 
+-- Esto se realiza usando el último elemento de los pixels,
 -- y le adjuntamos el resto de la lista.
 down :: Pixels -> Pixels
 down x = last x:(init x)
@@ -200,7 +201,7 @@ down x = last x:(init x)
 -- final del string.
 left :: Pixels -> Pixels
 left x = map move x
-  where move(x:xs) = xs ++[x]
+    where move(x:xs) = reverse(x:(reverse xs))
 
 -- | Desplaza una columan del Pixel hacia la derecha.
 -- Igual que con left, mapeamos colocando el último elemento al principio
