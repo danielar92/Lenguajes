@@ -3,14 +3,14 @@ Module      : Pixels
 Description : Módulo que permite pasar un texto y transformarlo en Pixeles
                 de LED Displays.
 Copyright   : Daniela Rodríguez, 2014
-              Patrick Rengifo, 2014
+              Patrick Reunify, 2014
 -}
 
--- module Pixels
---        (
---          readFont
---        -- , font
---        ) where
+module Pixels
+       (
+         readFont
+       -- , font
+       ) where
 
 import System.IO
 import qualified Data.Map as M
@@ -56,12 +56,8 @@ checkSize row col list = if (length list) /= row+1
 readEachLetter :: Int -> Int -> [[String]] -> M.Map Char Pixels -> IO (M.Map Char Pixels)
 readEachLetter _ _ [] accum = return accum
 readEachLetter n m letters accum = do
-  putStrLn "asdf"
-  -- print (head letters)
-  putStrLn $ show (head letters)
   let (letterCod:current) = checkSize n m  (head letters)
-
-  let letter = readLetter letterCod
+      letter = readLetter letterCod
       newAccum = M.insert letter pixels accum
       pixels = Pixels { dots = map transform (readLetterRep current) }
       transform x = map transformChar x
@@ -73,7 +69,7 @@ readEachLetter n m letters accum = do
 -- | This bad boy hace magia. Te verifica si están los putos números de
 -- filas y columnas, te lee el archivo y toda la paja.
 
---readFont :: Handle-> IO (Map Char Pixels)
+readFont :: Handle-> IO (M.Map Char Pixels)
 readFont h = do
   contents <- hGetContents h
   let l = lines contents
@@ -85,12 +81,26 @@ readFont h = do
                 letters = partition (tail l) (row+1)
             readEachLetter row col letters M.empty
 
--- | Abrimos el archivo font y le damos play a todo.
+-- | Recibe el Map y la letra a convertir. Si esta no se encuentra, se selecciona
+-- el primer elemento del Map para crear un Pixels todo prendido.
+font :: M.Map Char Pixels -> Char -> Pixels
+font dicc wanted = if (M.member wanted dicc)
+                   then dicc M.! wanted
+                   else let x = snd(M.elemAt 0 dicc)
+                            n = length (dots x) -- filas
+                            m = length ((dots x) !! 0) -- columnas
+                        in Pixels [[Pixel True | y <- [1..m]] | x <- [1..n]]
 
+
+-- | Abrimos el archivo font y le damos play a todo.
 main = do
     putStrLn "Introduce el nombre del archivo:  "
     file <- getLine
     handle <- openFile file ReadMode
     result <- readFont handle
-    putStrLn $ show result
+    -- putStrLn "Letrica aqui:"
+    -- algo <- getChar
+    -- let myletter = font result algo
+    -- print myletter
+   -- putStrLn $ show result
     putStrLn "Done mofo."
