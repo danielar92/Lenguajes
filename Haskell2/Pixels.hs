@@ -8,19 +8,66 @@ Copyright   : Daniela Rodríguez, 2014
 
 module Pixels
        (
-         readFont
+         readFont,
+         messageToPixels,
+         font,
+         Pixels(..),
+         Pixel(..)
        -- , font
        ) where
 
 import System.IO
 import qualified Data.Map as M
-
+import Control.Monad
 
 data Pixels = Pixels { -- color :: Color
                      {- ,  -} dots ::[[Pixel]] }
            deriving (Show)
 
 data Pixel = Pixel { on :: Bool } deriving Show
+
+-- | Recibe el Map y la letra a convertir. Si esta no se encuentra, se selecciona
+-- el primer elemento del Map para crear un Pixels todo prendido.
+font :: M.Map Char Pixels -> Char -> Pixels
+font dicc wanted = if (M.member wanted dicc)
+                   then dicc M.! wanted
+                   else let x = snd (M.elemAt 0 dicc)
+                            n = length (dots x) -- filas
+                            m = length ((dots x) !! 0) -- columnas
+                        in Pixels [[Pixel True | y <- [1..m]] | x <- [1..n]]
+
+
+pixelListToPixels :: [Pixels] -> Pixels
+pixelListToPixels xs = Pixels { dots = newDots }
+  where newDots = concatMap dots xs
+
+
+-- pixelListToPixels = undefined
+concatPixels :: [Pixels] -> Pixels
+concatPixels xs = Pixels {dots = newDots} where
+  newDots = foldr (zipWith (++)) initial $ initialDots
+  initialDots = map dots xs
+  initial = if null initialDots
+            then []
+            else [[] | x <- [1..(length (initialDots !! 0))] ]
+
+messageToPixels :: M.Map Char Pixels ->  String -> Pixels
+messageToPixels m xs = Pixels {dots = newDots} where
+  newDots = foldr (zipWith (addWhitespace)) initial $ initialDots
+  initialDots = map dots $ map (font m) xs
+  initial = if null initialDots
+            then []
+            else [[] | x <- [1..(length (initialDots !! 0))] ]
+  addWhitespace x y = x ++ [whitespace] ++ y
+  whitespace = Pixel { on = False }
+
+-- up = undefined
+-- down = undefined
+-- left = undefined
+-- right = undefined
+-- upsideDown = undefined
+-- backwards = undefined
+-- negative = undefined
 
 -- | Este maldito crea una lista de cada letra a representar con su font
 partition :: [a] -> Int -> [[a]]
@@ -80,27 +127,3 @@ readFont h = do
                 row = read (numbers !! 1) :: Int
                 letters = partition (tail l) (row+1)
             readEachLetter row col letters M.empty
-
--- | Recibe el Map y la letra a convertir. Si esta no se encuentra, se selecciona
--- el primer elemento del Map para crear un Pixels todo prendido.
-font :: M.Map Char Pixels -> Char -> Pixels
-font dicc wanted = if (M.member wanted dicc)
-                   then dicc M.! wanted
-                   else let x = snd(M.elemAt 0 dicc)
-                            n = length (dots x) -- filas
-                            m = length ((dots x) !! 0) -- columnas
-                        in Pixels [[Pixel True | y <- [1..m]] | x <- [1..n]]
-
-
--- | Abrimos el archivo font y le damos play a todo.
-main = do
-    putStrLn "Introduce el nombre del archivo:  "
-    file <- getLine
-    handle <- openFile file ReadMode
-    result <- readFont handle
-    -- putStrLn "Letrica aqui:"
-    -- algo <- getChar
-    -- let myletter = font result algo
-    -- print myletter
-   -- putStrLn $ show result
-    putStrLn "Done mofo."
