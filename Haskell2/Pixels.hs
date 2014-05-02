@@ -36,12 +36,13 @@ font dicc wanted = if (M.member wanted dicc)
                             m = length ((dots x) !! 0) -- columnas
                         in Pixels [[Pixel True | y <- [1..m]] | x <- [1..n]]
 
--- | Recibe una lista de varios Pixels y los concatena en uno solo.
+-- | Recibe una lista de varios Pixels y los concatena con un Pixel vacío entre
+-- cada uno.
 pixelListToPixels :: [Pixels] -> Pixels
 pixelListToPixels xs = Pixels { dots = newDots }
   where newDots = concatMap dots xs
 
--- | Recibe una lista de varios Pixels y los concatena en uno solo. (diferencia?)
+-- | Recibe una lista de varios Pixels y los concatena en uno solo.
 concatPixels :: [Pixels] -> Pixels
 concatPixels xs = Pixels {dots = newDots} where
   newDots = foldr (zipWith (++)) initial $ initialDots
@@ -61,8 +62,8 @@ messageToPixels m xs = Pixels {dots = newDots} where
   addWhitespace x y = x ++ [whitespace] ++ y
   whitespace = Pixel { on = False }
 
--- | Este maldito crea una lista de cada letra a representar con su font
--- (Para que sirve el Int?)
+-- | A través de un font y el número de filas del mismo, lo representamos como
+-- una lista.
 partition :: [a] -> Int -> [[a]]
 partition [] _ = []
 partition list n = take n list : partition (drop n list) n
@@ -71,8 +72,7 @@ partition list n = take n list : partition (drop n list) n
 readLetter('"':letter:'"':xs) = letter
 readLetter x = error $  "Formato incorrecto especificando una letra." ++ (show x)
 
--- | Verificación de la definición de pixeles sea sólo astericos o espacios
--- en blanco.
+-- | Verificación de la definición de pixeles.
 readLetterRep = map (\x -> if check x
                            then x
                            else error "Caracteres inesperados")
