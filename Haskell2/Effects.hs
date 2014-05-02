@@ -1,6 +1,6 @@
 {-|
 Module      : Effects
-Description : Módulo de implementación de los efectos de los píxeles
+Description : Módulo de implementación de los efectos de los pixeles
 Copyright   : Daniela Rodríguez, 2014
               Patrick Rengifo, 2014
 -}
@@ -43,36 +43,36 @@ readDisplayInfo h = do
   contents <- hGetContents h
   return (read contents)
 
--- | Desplaza una fila del Píxel hacia arriba.
+-- | Desplaza una fila del Pixel hacia arriba.
 up :: Pixels -> Pixels
 up pixel = Pixels { dots = reverse (x : (reverse xs)) }
   where x:xs = dots pixel
 
--- | Desplaza una fila del Píxel hacia abajo
+-- | Desplaza una fila del Pixel hacia abajo
 down :: Pixels -> Pixels
 down pixel = Pixels { dots = last x:(init x) }
   where x = dots pixel
 
--- | Desplaza una columna del Píxel hacia la izquierda.
+-- | Desplaza una columna del Pixel hacia la izquierda.
 left :: Pixels -> Pixels
 left pixel = Pixels { dots = map move x }
     where
       x = dots pixel
       move (x:xs) = reverse (x:(reverse xs))
 
--- | Desplaza una columan del Píxel hacia la derecha.
+-- | Desplaza una columan del Pixel hacia la derecha.
 right :: Pixels -> Pixels
 right pixel = Pixels { dots = (map (\x -> last x:(init x)) $ dots pixel) }
 
--- | Invierte el orden de las filas del Píxel.
+-- | Invierte el orden de las filas del Pixel.
 upsideDown :: Pixels -> Pixels
 upsideDown pixel = Pixels { dots = reverse (dots pixel) }
 
--- | Invierte el orden de las columnas del Píxel.
+-- | Invierte el orden de las columnas del Pixel.
 backwards :: Pixels -> Pixels
 backwards pixel = Pixels { dots = map reverse (dots pixel)}
 
--- | Intercambia los caracteres ' '  y '*' en el Píxel.
+-- | Intercambia los caracteres ' '  y '*' en el Pixel.
 negative :: Pixels -> Pixels
 negative pixel = Pixels { dots = map (map x) (dots pixel)}
   where x y = Pixel { on = not (on y)}
