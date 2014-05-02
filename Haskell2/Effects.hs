@@ -1,3 +1,10 @@
+{-|
+Module      : Effects
+Description : Módulo de implementación de los efectos de los píxeles
+Copyright   : Daniela Rodríguez, 2014
+              Patrick Rengifo, 2014
+-}
+
 module Effects
        (
          Effects(..)
@@ -36,45 +43,36 @@ readDisplayInfo h = do
   contents <- hGetContents h
   return (read contents)
 
--- | Desplaza una fila del Pixel hacia arriba.
--- Esto se realiza al concatenar la 'cabeza' del String al final.
+-- | Desplaza una fila del Píxel hacia arriba.
 up :: Pixels -> Pixels
 up pixel = Pixels { dots = reverse (x : (reverse xs)) }
   where x:xs = dots pixel
 
--- | Desplaza una fila del Pixel hacia abajo
--- Esto se realiza usando el último elemento de los pixels,
--- y le adjuntamos el resto de la lista.
+-- | Desplaza una fila del Píxel hacia abajo
 down :: Pixels -> Pixels
 down pixel = Pixels { dots = last x:(init x) }
   where x = dots pixel
 
--- | Desplaza una columna del Pixel hacia la izquiera.
--- Mapeamos al pixels con la función move, que coloca la 'cabeza' al
--- final del string.
+-- | Desplaza una columna del Píxel hacia la izquierda.
 left :: Pixels -> Pixels
 left pixel = Pixels { dots = map move x }
     where
       x = dots pixel
       move (x:xs) = reverse (x:(reverse xs))
 
--- | Desplaza una columan del Pixel hacia la derecha.
--- Igual que con left, mapeamos colocando el último elemento al principio
+-- | Desplaza una columan del Píxel hacia la derecha.
 right :: Pixels -> Pixels
 right pixel = Pixels { dots = (map (\x -> last x:(init x)) $ dots pixel) }
 
--- | Invierte el orden de las filas del Pixel.
--- Colocamos al revés el pixels con reverse.
+-- | Invierte el orden de las filas del Píxel.
 upsideDown :: Pixels -> Pixels
 upsideDown pixel = Pixels { dots = reverse (dots pixel) }
 
--- | Invierte el orden de las columnas del Pixel.
--- Mapeamos cada elemento con reverse.
+-- | Invierte el orden de las columnas del Píxel.
 backwards :: Pixels -> Pixels
 backwards pixel = Pixels { dots = map reverse (dots pixel)}
 
--- | Intercambia los caracteres ' '  y '*' en el Pixel.
--- Mapeamos el mapeo con la función x, que invierte asteriscos por espacios
+-- | Intercambia los caracteres ' '  y '*' en el Píxel.
 negative :: Pixels -> Pixels
 negative pixel = Pixels { dots = map (map x) (dots pixel)}
   where x y = Pixel { on = not (on y)}
