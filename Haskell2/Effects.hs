@@ -30,12 +30,12 @@ data Effects = Say String
              deriving (Read, Show)
 
 
-dibuja :: Pixels -> IO ()
-dibuja pixel = do
-  forM_ (dots pixel) $ \fila -> do
-    let transform True = '*'
-        transform False = ' '
-    putStrLn $ map (transform . on) fila
+-- dibuja :: Pixels -> IO ()
+-- dibuja pixel = do
+--   forM_ (dots pixel) $ \fila -> do
+--     let transform True = '*'
+--         transform False = ' '
+--     putStrLn $ map (transform . on) fila
 
 
 readDisplayInfo :: Handle -> IO [Effects]
