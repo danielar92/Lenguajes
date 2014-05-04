@@ -11,7 +11,7 @@ import qualified Effects as E
 import qualified Pixels as P
 
 ledDisplay :: Map Char Pixels -> [Effects] -> IO ()
-ledDisplay l = do
+ledDisplay d e = do
   G.runGraphics $ do
     w <- G.openWindow "Drawing Pixels" (640,480)
     G.clearWindow w
@@ -25,15 +25,19 @@ drawTree t = do
     G.drawInWindow w $ G.overGraphics $ branches l
     G.getKey w
     G.closeWindow w
+    
+processFiles []       = putStrLn "Hasta Luego!"
+processFiles (fn:fns) = do 
+  handle <- openFile fn ReadMode
+  makeup <- readDisplayInfo handle
+--   do something
+--   let t = (read s)::(Tree String)
+--   drawTree t
+  processFiles fns
 
 main = do
   files <- SE.getArgs
-  processFiles files
-
-processFiles []       = putStrLn "Bye!"
-processFiles (fn:fns) = do 
-  putStrLn $ "Processing " ++ fn
-  s <- readFile fn
-  let t = (read s)::(Tree String)
-  drawTree t
-  processFiles fns
+  fontFile = head files
+  handle <- openFile fontFile ReadMode
+  dict <- readFont handle
+  processFiles tail $ files

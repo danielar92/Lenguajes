@@ -79,11 +79,11 @@ negative pixel = Pixels { dots = map (map x) (dots pixel)}
 
 
 
-efectos :: Pixels -> IO ()
-efectos pixel = do
-  dibuja pixel
-  threadDelay 1000000
-  efectos (left (negative pixel))
+-- efectos :: Pixels -> IO ()
+-- efectos pixel = do
+--   dibuja pixel
+--   threadDelay 1000000
+--   efectos (left (negative pixel))
 
 
 -- | Abrimos el archivo font y le damos play a todo.
