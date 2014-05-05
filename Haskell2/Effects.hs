@@ -42,6 +42,10 @@ readDisplayInfo :: Handle -> IO [Effects]
 readDisplayInfo h = do
   contents <- hGetContents h
   return (read contents)
+  
+-- | Lleva un String a su representación en Pixels
+-- say :: String -> Pixels
+-- say me volvi un culo messageToPixels
 
 -- | Desplaza una fila del Pixel hacia arriba.
 up :: Pixels -> Pixels
@@ -76,8 +80,13 @@ backwards pixel = Pixels { dots = map reverse (dots pixel)}
 negative :: Pixels -> Pixels
 negative pixel = Pixels { dots = map (map x) (dots pixel)}
   where x y = Pixel { on = not (on y)}
+        
+-- | Produce un retraso en milisegundos en representación de Pixels
+delay :: Int -> IO ()
+delay y = threadDelay y
 
-
+-- | Repetir una serie de efectos un número finito de veces
+-- repeatE :: Integer -> [Effects] -> 
 
 -- efectos :: Pixels -> IO ()
 -- efectos pixel = do
@@ -87,22 +96,22 @@ negative pixel = Pixels { dots = map (map x) (dots pixel)}
 
 
 -- | Abrimos el archivo font y le damos play a todo.
-main = do
-    putStrLn "Introduce el nombre del archivo:  "
-    file <- getLine
-    handle <- openFile file ReadMode
-    result <- readFont handle
-    let whatever = map (font result) ['a', 'b']
-    mapM_ dibuja whatever
+-- main = do
+--     putStrLn "Introduce el nombre del archivo:  "
+--     file <- getLine
+--     handle <- openFile file ReadMode
+--     result <- readFont handle
+--     let whatever = map (font result) ['a', 'b']
+--     mapM_ dibuja whatever
     -- putStrLn "Concat Mofos"
     -- dibuja $ pixelListToPixels []
     -- dibuja $ concatPixels whatever
-    dibuja $ messageToPixels result "abcs"
+--     dibuja $ messageToPixels result "abcs"
     -- putStrLn "Letrica aqui:"
     -- algo <- getChar
     -- let myletter = font result algo
     -- print myletter
    -- putStrLn $ show result
-    putStrLn "Done mofo."
+--     putStrLn "Done mofo."
     -- forever $ do
-    efectos (messageToPixels result "abc")
+--     efectos (messageToPixels result "abc")

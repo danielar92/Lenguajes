@@ -15,16 +15,11 @@ ledDisplay d e = do
   G.runGraphics $ do
     w <- G.openWindow "Drawing Pixels" (640,480)
     G.clearWindow w
-    
-drawTree t = do
-  G.runGraphics $ do
-    w <- G.openWindow "Drawing Trees" (640,480)
-    G.clearWindow w
     let l = layout t
-    G.drawInWindow w $ G.overGraphics $ nodes l
-    G.drawInWindow w $ G.overGraphics $ branches l
-    G.getKey w
-    G.closeWindow w
+    G.drawInWindow w $ G.overGraphics $ nodes l --The shit to draw pixels
+    key <- G.getKey w --Aqui se pondra tecla <- G.getKey para saber si tecla = Esc y terminar la vaina esta.
+    if key == '\ESC' then G.closeWindow w else --algo
+    
     
 processFiles []       = putStrLn "Hasta Luego!"
 processFiles (fn:fns) = do 
