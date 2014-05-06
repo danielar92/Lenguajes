@@ -7,7 +7,8 @@ Copyright   : Daniela Rodríguez, 2014
 
 module Effects
        (
-         Effects(..)
+         Effects(..),
+         readDisplayInfo
        ) where
 
 import System.IO
