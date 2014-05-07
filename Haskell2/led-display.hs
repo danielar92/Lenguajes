@@ -28,9 +28,6 @@ processFiles (fn:fns) = do
   handle <- openFile fn ReadMode
   makeup <- E.readDisplayInfo handle
   print makeup
---   do something
---   let t = (read s)::(Tree String)
---   drawTree t
   processFiles fns
 
 main = do
@@ -39,4 +36,5 @@ main = do
   handle <- openFile fontFile ReadMode
   dict <- P.readFont handle
   processFiles $ tail files
+  --ledDisplay dict
   -- putStrLn "Hi."

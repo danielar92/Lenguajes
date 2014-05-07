@@ -118,3 +118,40 @@ readFont h = do
                 row = read (numbers !! 1) :: Int
                 letters = partition (tail l) (row+1)
             readEachLetter row col letters M.empty
+
+
+-- | Desplaza una fila del Pixel hacia arriba.
+up :: Pixels -> Pixels
+up pixel = Pixels {color = G.White, dots = reverse (x : (reverse xs)) }
+  where x:xs = dots pixel
+
+
+
+-- | Desplaza una fila del Pixel hacia abajo
+down :: Pixels -> Pixels
+down pixel = Pixels {color = G.White, dots = last x:(init x) }
+  where x = dots pixel
+
+-- | Desplaza una columna del Pixel hacia la izquierda.
+left :: Pixels -> Pixels
+left pixel = Pixels { color = G.White,dots = map move x }
+    where
+      x = dots pixel
+      move (x:xs) = reverse (x:(reverse xs))
+
+-- | Desplaza una columan del Pixel hacia la derecha.
+right :: Pixels -> Pixels
+right pixel = Pixels {color = G.White, dots = (map (\x -> last x:(init x)) $ dots pixel) }
+
+-- | Invierte el orden de las filas del Pixel.
+upsideDown :: Pixels -> Pixels
+upsideDown pixel = Pixels {color = G.White, dots = reverse (dots pixel) }
+
+-- | Invierte el orden de las columnas del Pixel.
+backwards :: Pixels -> Pixels
+backwards pixel = Pixels {color = G.White, dots = map reverse (dots pixel)}
+
+-- | Intercambia los caracteres ' '  y '*' en el Pixel.
+negative :: Pixels -> Pixels
+negative pixel = Pixels { color = G.White,dots = map (map x) (dots pixel)}
+  where x y = Pixel { on = not (on y)}
