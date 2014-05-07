@@ -1,0 +1,23 @@
+[1]patrick@Luna:~/Lenguajes/Haskell2 > ghci led-display.hs 
+GHCi, version 7.6.3: http://www.haskell.org/ghc/  :? for help
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+[1 of 3] Compiling Pixels           ( Pixels.hs, interpreted )
+[2 of 3] Compiling Effects          ( Effects.hs, interpreted )
+[3 of 3] Compiling Main             ( led-display.hs, interpreted )
+Ok, modules loaded: Effects, Pixels, Main.
+*Main> :set -fbreak-on-exception
+*Main> :set args font.txt efectos5.txt
+*Main> :trace main
+Stopped at <exception thrown>
+_exception :: e = _
+[<exception thrown>] *Main> :back
+Logged breakpoint at Pixels.hs:69:45-55
+_result :: [[Char]]
+list :: [[Char]]
+n :: Int
+[-1: Pixels.hs:69:45-55] *Main> :list
+68  partition [] _ = []
+69  partition list n = take n list : partition (drop n list) n
+70  

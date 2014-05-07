@@ -38,11 +38,19 @@ data Effects = Say String
 --         transform False = ' '
 --     putStrLn $ map (transform . on) fila
 
+readEffects :: [String] -> [Effects] -> IO ([Effects])
+readEffects [] accum = return accum
+readEffects (ef:efs) accum = do
+  let e = (read ef)::([Effects])
+      newAccum = accum ++ e
+  readEffects efs newAccum
 
 readDisplayInfo :: Handle -> IO [Effects]
 readDisplayInfo h = do
   contents <- hGetContents h
-  return (read contents)
+  let conjunto = []
+      l = lines contents
+  readEffects l conjunto
   
 -- | Lleva un String a su representación en Pixels
 -- say :: String -> Pixels
