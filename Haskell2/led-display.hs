@@ -21,10 +21,10 @@ ledDisplay d e = do
     key <- G.getKey w --Aqui se pondra tecla <- G.getKey para saber si tecla = Esc y terminar la vaina esta.
 --     if key == '\ESC' then G.closeWindow w else --algo
     G.closeWindow w
-    
-    
+
+
 processFiles []       = putStrLn "Hasta Luego!"
-processFiles (fn:fns) = do 
+processFiles (fn:fns) = do
   handle <- openFile fn ReadMode
   makeup <- E.readDisplayInfo handle
   print makeup
@@ -39,3 +39,4 @@ main = do
   handle <- openFile fontFile ReadMode
   dict <- P.readFont handle
   processFiles $ tail files
+  -- putStrLn "Hi."

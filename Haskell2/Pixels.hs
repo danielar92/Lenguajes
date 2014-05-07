@@ -2,7 +2,7 @@
 Module      : Pixels
 Description : Módulo que permite pasar un texto y transformarlo en Pixeles
                 de LED Displays.
-Copyright   : Daniela Rodríguez, 2014
+Copyright   : Daniela Rodriguez, 2014
               Patrick Rengifo, 2014
 -}
 
@@ -18,10 +18,11 @@ module Pixels
 
 import System.IO
 import qualified Data.Map as M
+import qualified Graphics.HGL as G
 import Control.Monad
 
-data Pixels = Pixels { -- color :: Color
-                     {- ,  -} dots ::[[Pixel]] }
+data Pixels = Pixels { color :: G.Color
+                     , dots ::[[Pixel]] }
            deriving (Show)
 
 data Pixel = Pixel { on :: Bool } deriving Show
@@ -34,17 +35,17 @@ font dicc wanted = if (M.member wanted dicc)
                    else let x = snd (M.elemAt 0 dicc)
                             n = length (dots x) -- filas
                             m = length ((dots x) !! 0) -- columnas
-                        in Pixels [[Pixel True | y <- [1..m]] | x <- [1..n]]
+                        in Pixels {color = G.White, dots=[[Pixel True | y <- [1..m]] | x <- [1..n]]}
 
 -- | Recibe una lista de varios Pixels y los concatena con un Pixel vacío entre
 -- cada uno.
 pixelListToPixels :: [Pixels] -> Pixels
-pixelListToPixels xs = Pixels { dots = newDots }
+pixelListToPixels xs = Pixels {color = G.White,  dots = newDots }
   where newDots = concatMap dots xs
 
 -- | Recibe una lista de varios Pixels y los concatena en uno solo.
 concatPixels :: [Pixels] -> Pixels
-concatPixels xs = Pixels {dots = newDots} where
+concatPixels xs = Pixels {color = G.White, dots = newDots} where
   newDots = foldr (zipWith (++)) initial $ initialDots
   initialDots = map dots xs
   initial = if null initialDots
@@ -53,7 +54,7 @@ concatPixels xs = Pixels {dots = newDots} where
 
 -- | Toma un diccionario de varios caracteres Pixels y transforma en un único Pixels
 messageToPixels :: M.Map Char Pixels ->  String -> Pixels
-messageToPixels m xs = Pixels {dots = newDots} where
+messageToPixels m xs = Pixels {color = G.White, dots = newDots} where
   newDots = foldr (zipWith (addWhitespace)) initial $ initialDots
   initialDots = map dots $ map (font m) xs
   initial = if null initialDots
@@ -98,7 +99,7 @@ readEachLetter n m letters accum = do
   let (letterCod:current) = checkSize n m  (head letters)
       letter = readLetter letterCod
       newAccum = M.insert letter pixels accum
-      pixels = Pixels { dots = map transform (readLetterRep current) }
+      pixels = Pixels {color = G.White, dots = map transform (readLetterRep current) }
       transform x = map transformChar x
       transformChar '*' = Pixel { on = True}
       transformChar ' ' = Pixel { on = False }
