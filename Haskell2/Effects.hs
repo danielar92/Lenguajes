@@ -31,14 +31,6 @@ data Effects = Say String
              | Forever [Effects]
              deriving (Read, Show)
 
-
--- dibuja :: Pixels -> IO ()
--- dibuja pixel = do
---   forM_ (dots pixel) $ \fila -> do
---     let transform True = '*'
---         transform False = ' '
---     putStrLn $ map (transform . on) fila
-
 readEffects :: [String] -> [Effects] -> IO ([Effects])
 readEffects [] accum = return accum
 readEffects (ef:efs) accum = do
@@ -50,15 +42,10 @@ readDisplayInfo :: Handle -> IO [Effects]
 readDisplayInfo h = do
   contents <- hGetContents h
   return $ map read $ lines contents
-  -- let conjunto = []
-  --     l = lines contents
-  -- readEffects l conjunto
 
 -- | Lleva un String a su representación en Pixels
 -- say :: String -> Pixels
 -- say me volvi un culo messageToPixels
-
-
 
 -- | Produce un retraso en milisegundos en representación de Pixels
 delay :: Int -> IO ()
