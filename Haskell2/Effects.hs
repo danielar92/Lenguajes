@@ -31,25 +31,24 @@ data Effects = Say String
              | Forever [Effects]
              deriving (Read, Show)
 
-readEffects :: [String] -> [Effects] -> IO ([Effects])
-readEffects [] accum = return accum
-readEffects (ef:efs) accum = do
-  let e = (read ef)::([Effects])
-      newAccum = accum ++ e
-  readEffects efs newAccum
-
 readDisplayInfo :: Handle -> IO [Effects]
 readDisplayInfo h = do
   contents <- hGetContents h
   return $ map read $ lines contents
 
--- | Lleva un String a su representación en Pixels
--- say :: String -> Pixels
--- say me volvi un culo messageToPixels
-
 -- | Produce un retraso en milisegundos en representación de Pixels
 delay :: Int -> IO ()
 delay y = threadDelay y
+
+-- | Dado el arreglo con todos los efectos busca el String más largo a dibujar
+findLargest :: [Effects] -> Int
+findLargest ef = foldr lookForMe 0 ef
+  where lookForMe (Say l) x = if (length l) > x then length l else x
+        lookForMe _ x       = x
+
+-- | Lleva un String a su representación en Pixels
+-- say :: String -> Pixels
+-- say me volvi un culo messageToPixels
 
 -- | Repetir una serie de efectos un número finito de veces
 -- repeatE :: Integer -> [Effects] ->
