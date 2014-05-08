@@ -8,7 +8,8 @@ Copyright   : Daniela Rodríguez, 2014
 module Effects
        (
          Effects(..),
-         readDisplayInfo
+         readDisplayInfo,
+         findLargest
        ) where
 
 import System.IO
@@ -40,11 +41,16 @@ readDisplayInfo h = do
 delay :: Int -> IO ()
 delay y = threadDelay y
 
+
 -- | Dado el arreglo con todos los efectos busca el String más largo a dibujar
 findLargest :: [Effects] -> Int
 findLargest ef = foldr lookForMe 0 ef
-  where lookForMe (Say l) x = if (length l) > x then length l else x
-        lookForMe _ x       = x
+  where lookForMe (Say l) x      = if (length l) > x then length l else x
+        lookForMe _ x            = x
+        lookForMe (Forever l) x  = let y = findLargest l
+                                   in if y > x then y else x
+        lookForMe (Repeat _ l) x = let y = findLargest l
+                                   in if y > x then y else x
 
 -- | Lleva un String a su representación en Pixels
 -- say :: String -> Pixels

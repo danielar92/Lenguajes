@@ -12,11 +12,11 @@ import qualified Pixels as P
 import System.IO
 import Data.Map
 
--- | Dunno
+-- | Con el diccionario de fonts, ejectuta todos los efectos en la lista en pantalla
 ledDisplay :: Map Char P.Pixels -> [E.Effects] -> IO ()
 ledDisplay d e = do
   G.runGraphics $ do
-    w <- G.openWindow "Drawing Pixels" (640,480)
+    w <- G.openWindow "Drawing Pixels" (640,640)
     G.clearWindow w
 --     G.drawInWindow w $ G.overGraphics $ nodes l --The shit to draw pixels
     key <- G.getKey w --Aqui se pondra tecla <- G.getKey para saber si tecla = Esc y terminar la vaina esta.
@@ -38,7 +38,9 @@ main = do
   handle <- openFile fontFile ReadMode
   dict <- P.readFont handle
   eff <- processFiles [] $ tail files
+  let largo = E.findLargest eff
   print eff
+  print largo
   return ()
   
   -- calculo de tamano

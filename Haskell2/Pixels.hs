@@ -36,6 +36,14 @@ font dicc wanted = if (M.member wanted dicc)
                             n = length (dots x) -- filas
                             m = length ((dots x) !! 0) -- columnas
                         in Pixels {color = G.White, dots=[[Pixel True | y <- [1..m]] | x <- [1..n]]}
+                        
+                        
+-- dibujaP :: Pixel -> G.Point -> G.Graphic
+-- dibujaP p (x,y) = G.ellipse (x,y) (x+2, y+2)
+-- 
+-- dibujarPixeles :: Pixels -> G.Point -> [G.Graphic] -> [G.Graphic]
+-- dibujarPixeles [] _ accum = accum
+-- dibujarPixeles (p:ps) (x,y) accum = map (\ dibujaP
 
 -- | Recibe una lista de varios Pixels y los concatena con un Pixel vacío entre
 -- cada uno.
