@@ -12,6 +12,7 @@ import qualified Pixels as P
 import System.IO
 import Data.Map
 
+-- | Dunno
 ledDisplay :: Map Char P.Pixels -> [E.Effects] -> IO ()
 ledDisplay d e = do
   G.runGraphics $ do
@@ -22,19 +23,24 @@ ledDisplay d e = do
 --     if key == '\ESC' then G.closeWindow w else --algo
     G.closeWindow w
 
-
-processFiles []       = putStrLn "Hasta Luego!"
-processFiles (fn:fns) = do
+-- | Procesa los archivos de efectos para crear una lista unificada de todos juntos.
+processFiles :: [E.Effects] -> [String] -> IO ([E.Effects])
+processFiles x []       = return $ x
+processFiles accum (fn:fns) = do
   handle <- openFile fn ReadMode
   makeup <- E.readDisplayInfo handle
-  print makeup
-  processFiles fns
+  let newAccum = accum ++ makeup
+  processFiles newAccum fns
 
 main = do
   files <- SE.getArgs
   let fontFile = head files
   handle <- openFile fontFile ReadMode
   dict <- P.readFont handle
-  processFiles $ tail files
+  eff <- processFiles [] $ tail files
+  print eff
+  return ()
+  
+  -- calculo de tamano
   --ledDisplay dict
   -- putStrLn "Hi."
