@@ -39,6 +39,8 @@ main = do
   dict <- P.readFont handle
   eff <- processFiles [] $ tail files
   let largo = E.findLargest eff
+      tam = P.pSize dict
+  print tam
   print eff
   print largo
   return ()

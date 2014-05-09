@@ -12,8 +12,9 @@ module Pixels
          messageToPixels,
          font,
          Pixels(..),
-         Pixel(..)
-       -- , font
+         Pixel(..),
+--          font,
+         pSize
        ) where
 
 import System.IO
@@ -22,7 +23,7 @@ import qualified Graphics.HGL as G
 import Control.Monad
 
 data Pixels = Pixels { color :: G.Color
-                     , dots ::[[Pixel]] }
+                     , dots :: [[Pixel]] }
            deriving (Show)
 
 data Pixel = Pixel { on :: Bool } deriving Show
@@ -38,12 +39,15 @@ font dicc wanted = if (M.member wanted dicc)
                         in Pixels {color = G.White, dots=[[Pixel True | y <- [1..m]] | x <- [1..n]]}
                         
                         
--- dibujaP :: Pixel -> G.Point -> G.Graphic
--- dibujaP p (x,y) = G.ellipse (x,y) (x+2, y+2)
--- 
--- dibujarPixeles :: Pixels -> G.Point -> [G.Graphic] -> [G.Graphic]
--- dibujarPixeles [] _ accum = accum
--- dibujarPixeles (p:ps) (x,y) accum = map (\ dibujaP
+dibujaP :: Pixel -> G.Point -> G.Graphic
+dibujaP p (x,y) = G.ellipse (x,y) (x+3, y+3)
+
+-- dibujarPs :: Pixels -> G.Point -> [G.Graphic] -> [G.Graphic]
+-- dibujarPs  
+
+pSize :: M.Map Char Pixels -> (Int, Int)
+pSize x = calculo (snd (M.elemAt 0 x))
+  where calculo y = (length $ head $ dots y, length $ dots y)
 
 -- | Recibe una lista de varios Pixels y los concatena con un Pixel vacío entre
 -- cada uno.
