@@ -20,6 +20,7 @@ import Pixels
 import qualified Data.Map as M
 import Control.Concurrent (threadDelay)
 import qualified Graphics.HGL as G
+import Text.Read (readMaybe)
 
 data Effects = Say String
              | Up
@@ -36,7 +37,7 @@ data Effects = Say String
              deriving (Read, Show)
 
 
--- | algo
+-- | Dibuja los Pixels a partir de una coordenada.
 drawPixels :: (Int, Int) -> Pixels -> G.Graphic
 drawPixels (x, y) p = G.withColor (color p) $ G.overGraphics graphics
   where graphics = [ drawDot (y+dy, x+dx)  val | (row, dx) <- zip booleans [0,5..], (val, dy) <- zip row [0, 5..] ]
@@ -45,8 +46,8 @@ drawPixels (x, y) p = G.withColor (color p) $ G.overGraphics graphics
 
 -- | Dibuja la región 3x3 de cada Pixel
 drawDot :: (Int, Int) -> Bool -> G.Graphic
-drawDot _  False = G.emptyGraphic
-drawDot (x, y)True =  G.regionToGraphic $ G.rectangleRegion (x+1, y+1) (x+3, y+3)
+drawDot  _ False    = G.emptyGraphic
+drawDot (x, y) True = G.regionToGraphic $ G.rectangleRegion (x+1, y+1) (x+3, y+3)
 
 -- | Recibe un Effect y procede a llamar las funciones correspondientes para
 -- dibujarlo en la ventana gráfica
@@ -115,23 +116,10 @@ doEffect m w p e =
       newPixel <- foldM (doEffect m w) p xs
       putStrLn "FOREVER"
       doEffect m w newPixel (Forever xs)
-
--- | Función recursiva que lee una lista de Strings y los transforma en una lista
--- de Effects
-readEffects :: [String] -> [Effects] -> IO ([Effects])
-readEffects [] accum = return accum
-readEffects (ef:efs) accum = do
-  let e = (read ef)::([Effects])
-      newAccum = accum ++ e
-  readEffects efs newAccum
+      
 
 -- | Obtiene el contenido del archivo de Efectos a aplicar.
 readDisplayInfo :: Handle -> IO [Effects]
 readDisplayInfo h = do
   contents <- hGetContents h
   return $ map read $ lines contents
-
-
--- | Produce un retraso en milisegundos en representación de Pixels
-delay :: Int -> IO ()
-delay y = threadDelay y

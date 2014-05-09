@@ -14,6 +14,7 @@ import Control.Concurrent
 import System.IO
 import qualified Data.Map as M
 
+-- | Busca el string más largo para definir tamaño de la ventana
 findDimensions :: M.Map Char P.Pixels -> [E.Effects] -> (Int, Int)
 findDimensions m effects = maxDimensions effects
   where maxDimensions xs = foldl go (0, 0) $ map f xs
@@ -26,6 +27,7 @@ findDimensions m effects = maxDimensions effects
         n = length (P.dots x)
         m' = length (head (P.dots x))
 
+-- | Magic
 isFinite :: E.Effects -> Bool
 isFinite (E.Forever _ ) = False
 isFinite (E.Repeat x xs) = and $ map isFinite xs
@@ -34,10 +36,8 @@ isFinite _ = True
 isFiniteList :: [E.Effects] -> Bool
 isFiniteList = and . map isFinite
 
-
-
-ledDisplay :: M.Map Char P.Pixels -> [E.Effects] ->
-              IO ()
+-- | Abre una ventana con la ejecucion de las instrucciones en Efectos.
+ledDisplay :: M.Map Char P.Pixels -> [E.Effects] -> IO ()
 ledDisplay m e = do
   G.runGraphics $ do
     let (y, x) = findDimensions m e
@@ -61,6 +61,7 @@ ledDisplay m e = do
     -- forkIO $ cierrame
     G.par_ magic cierrame
 
+-- | Procesa los archivos de efectos
 processFiles :: [String] -> IO [E.Effects]
 processFiles []       = return []
 processFiles (fn:fns) = do
@@ -71,6 +72,8 @@ processFiles (fn:fns) = do
 
 main = do
   files <- SE.getArgs
+  if (length . tail $ files) < 1 then error "al menos un archivo de efectos debe ser especificado"
+                      else print "Bienvenido"
   let fontFile = head files
   handle <- openFile fontFile ReadMode
   dict <- P.readFont handle

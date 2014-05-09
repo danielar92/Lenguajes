@@ -1,4 +1,4 @@
-Say "X"
+Say "A"
 Delay 1000
-Negative
+Right
 Delay 1000

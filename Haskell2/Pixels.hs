@@ -43,16 +43,6 @@ font dicc wanted = if (M.member wanted dicc)
                             n = length (dots x) -- filas
                             m = length ((dots x) !! 0) -- columnas
                         in Pixels {color = G.White, dots=[[Pixel True | y <- [1..m]] | x <- [1..n]]}
-                        
-dibujaP :: Pixel -> G.Point -> G.Graphic
-dibujaP p (x,y) = G.ellipse (x,y) (x+3, y+3)
-
--- dibujarPs :: Pixels -> G.Point -> [G.Graphic] -> [G.Graphic]
--- dibujarPs  
-
-pSize :: M.Map Char Pixels -> (Int, Int)
-pSize x = calculo (snd (M.elemAt 0 x))
-  where calculo y = (length $ head $ dots y, length $ dots y)
 
 -- | Recibe una lista de varios Pixels y los concatena con un Pixel vacío entre
 -- cada uno.
@@ -93,7 +83,7 @@ readLetter x = error $  "Formato incorrecto especificando una letra." ++ (show x
 -- | Verificación de la definición de pixeles.
 readLetterRep = map (\x -> if check x
                            then x
-                           else error "Caracteres inesperados")
+                           else error "Caracteres inesperados.")
 
 -- | Verificación de la definición de pixeles sea sólo astericos o espacios
 -- en blanco.
@@ -103,7 +93,7 @@ check = all inRange
 -- | Verificación del tamaño de las filas y columnas con la especificación del Pixel
 checkSize :: Int -> Int -> [String] -> [String]
 checkSize row col list = if (length list) /= row+1
-                         then error "No furulan las filas"
+                         then error "No furulan las filas."
                          else (head list) : map (\x -> if length x /= col
                                          then error "No furulan las columnas."
                                          else x ) (tail list)
@@ -136,13 +126,10 @@ readFont h = do
                 letters = partition (tail l) (row+1)
             readEachLetter row col letters M.empty
 
-
 -- | Desplaza una fila del Pixel hacia arriba.
 up :: Pixels -> Pixels
 up pixel = pixel {dots = reverse (x : (reverse xs)) }
   where x:xs = dots pixel
-
-
 
 -- | Desplaza una fila del Pixel hacia abajo
 down :: Pixels -> Pixels
@@ -170,5 +157,5 @@ backwards pixel = pixel {dots = map reverse (dots pixel)}
 
 -- | Intercambia los caracteres ' '  y '*' en el Pixel.
 negative :: Pixels -> Pixels
-negative pixel = pixel { dots = map (map x) (dots pixel)}
-  where x y = Pixel { on = not (on y)}
+negative pixel = pixel {dots = map (map x) (dots pixel)}
+  where x y = Pixel {on = not (on y)}
