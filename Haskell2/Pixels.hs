@@ -13,8 +13,14 @@ module Pixels
          font,
          Pixels(..),
          Pixel(..),
---          font,
-         pSize
+         up,
+         down,
+         left,
+         right,
+         backwards,
+         upsideDown,
+         negative
+       -- , font
        ) where
 
 import System.IO
@@ -37,7 +43,6 @@ font dicc wanted = if (M.member wanted dicc)
                             n = length (dots x) -- filas
                             m = length ((dots x) !! 0) -- columnas
                         in Pixels {color = G.White, dots=[[Pixel True | y <- [1..m]] | x <- [1..n]]}
-                        
                         
 dibujaP :: Pixel -> G.Point -> G.Graphic
 dibujaP p (x,y) = G.ellipse (x,y) (x+3, y+3)
@@ -134,36 +139,36 @@ readFont h = do
 
 -- | Desplaza una fila del Pixel hacia arriba.
 up :: Pixels -> Pixels
-up pixel = Pixels {color = G.White, dots = reverse (x : (reverse xs)) }
+up pixel = pixel {dots = reverse (x : (reverse xs)) }
   where x:xs = dots pixel
 
 
 
 -- | Desplaza una fila del Pixel hacia abajo
 down :: Pixels -> Pixels
-down pixel = Pixels {color = G.White, dots = last x:(init x) }
+down pixel = pixel {dots = last x:(init x) }
   where x = dots pixel
 
 -- | Desplaza una columna del Pixel hacia la izquierda.
 left :: Pixels -> Pixels
-left pixel = Pixels { color = G.White,dots = map move x }
+left pixel = pixel { dots = map move x }
     where
       x = dots pixel
       move (x:xs) = reverse (x:(reverse xs))
 
 -- | Desplaza una columan del Pixel hacia la derecha.
 right :: Pixels -> Pixels
-right pixel = Pixels {color = G.White, dots = (map (\x -> last x:(init x)) $ dots pixel) }
+right pixel = pixel {dots = (map (\x -> last x:(init x)) $ dots pixel) }
 
 -- | Invierte el orden de las filas del Pixel.
 upsideDown :: Pixels -> Pixels
-upsideDown pixel = Pixels {color = G.White, dots = reverse (dots pixel) }
+upsideDown pixel = pixel {dots = reverse (dots pixel) }
 
 -- | Invierte el orden de las columnas del Pixel.
 backwards :: Pixels -> Pixels
-backwards pixel = Pixels {color = G.White, dots = map reverse (dots pixel)}
+backwards pixel = pixel {dots = map reverse (dots pixel)}
 
 -- | Intercambia los caracteres ' '  y '*' en el Pixel.
 negative :: Pixels -> Pixels
-negative pixel = Pixels { color = G.White,dots = map (map x) (dots pixel)}
+negative pixel = pixel { dots = map (map x) (dots pixel)}
   where x y = Pixel { on = not (on y)}
