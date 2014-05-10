@@ -16,6 +16,7 @@ module Effects
 import System.IO
 import Data.Char
 import qualified Graphics.HGL as G
+import Text.Read (readMaybe)
 
 -- | Data Effects que contiene los efectos aplicables a los Pixels.
 data Effects = Say String
@@ -31,7 +32,6 @@ data Effects = Say String
              | Repeat Integer [Effects]
              | Forever [Effects]
              deriving (Read, Show)
-
 
 
 -- | Atrapamos errores en la lectura del archivo de efectos

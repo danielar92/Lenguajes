@@ -82,9 +82,6 @@ findDimensions m effects = maxDimensions effects
         n = length (P.dots x)
         m' = length (head (P.dots x))
 
-
-
-
 -- | Creamos la ventana en donde se pintaran los Pixels. Se mantiene escuchando
 -- cuando haya una interrupción de teclado.
 ledDisplay :: M.Map Char P.Pixels -> [E.Effects] -> IO ()

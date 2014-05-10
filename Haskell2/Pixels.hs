@@ -29,7 +29,7 @@ import qualified Graphics.HGL as G
 -- | Modificación del Pixels que incluye color y una lista de Pixel
 -- representando los puntos.
 data Pixels = Pixels { color :: G.Color
-                     , dots ::[[Pixel]] }
+                     , dots :: [[Pixel]] }
            deriving (Show)
 
 -- | Representación del Pixel encendido o apagado.
@@ -85,7 +85,7 @@ readLetter x = error $  "Formato incorrecto especificando una letra." ++ (show x
 -- | Verificación de la definición de pixeles.
 readLetterRep = map (\x -> if check x
                            then x
-                           else error "Caracteres inesperados")
+                           else error "Caracteres inesperados.")
 
 -- | Verificación de la definición de pixeles sea sólo astericos o espacios
 -- en blanco.
@@ -95,7 +95,7 @@ check = all inRange
 -- | Verificación del tamaño de las filas y columnas con la especificación del Pixel
 checkSize :: Int -> Int -> [String] -> [String]
 checkSize row col list = if (length list) /= row+1
-                         then error "No furulan las filas"
+                         then error "No furulan las filas."
                          else (head list) : map (\x -> if length x /= col
                                          then error "No furulan las columnas."
                                          else x ) (tail list)
@@ -127,13 +127,10 @@ parseFonts contents = if length numbers /= 2
         row = read (head (tail numbers)) :: Int
         letters = partition (tail l) (row+1)
 
-
 -- | Desplaza una fila del Pixel hacia arriba.
 up :: Pixels -> Pixels
 up pixel = pixel {dots = reverse (x : (reverse xs)) }
   where x:xs = dots pixel
-
-
 
 -- | Desplaza una fila del Pixel hacia abajo
 down :: Pixels -> Pixels
