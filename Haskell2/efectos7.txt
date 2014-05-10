@@ -1,0 +1,2 @@
+Say “abc”
+Forever[Delay 500,Up]

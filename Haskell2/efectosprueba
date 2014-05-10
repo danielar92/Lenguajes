@@ -1,0 +1,4 @@
+Say "abca"
+Repeat 20 [Delay 500, Right]
+Color morado
+Say "ca"
