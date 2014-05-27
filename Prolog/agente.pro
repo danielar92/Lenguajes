@@ -1,3 +1,5 @@
+:- op(500, yfx, :).
+
 horario( new_york, chicago,
            [  9:40 / 10:50 / nw4733 / todos,
              13:40 / 14:50 / nw4773 / habiles,
