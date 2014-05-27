@@ -7,24 +7,39 @@ horario( new_york, chicago,
 horario( chicago, new_york,
            [  9:10 / 10:00 / nw458 / todos,
              12:20 / 13:10 / aa511 / todos ] ). 
+             
 
 horario( chicago, dallas,
            [  9:40 / 10:50 / aa4732 / todos,
              11:40 / 12:50 / aa4752 / habiles,
-             18:40 / 19:50 / aa4822 / [lun,mar,mie,jue,vie] ] ). 
+             18:40 / 19:50 / aa4822 / [lun,mar,mie,jue,vie] ] ).
+horario( dallas, chicago,
+           [ 12:00 / 14:00 / aa4823 / [lun,mar,mie,jue,vie] ] ).
+
 
 horario( dallas, los_angeles,
            [ 13:20 / 16:20 / nw212 / [lun,mar,mie,vie,dom],
              16:30 / 19:30 / aa473 / [lun,mie,jue,sab] ] ). 
+horario( los_angeles, dallas,
+           [ 17:00 / 20:00 / nw213 / [lun,mar,mie,vie,dom],
+             20:00 / 23:00 / aa474 / [lun,mie,jue,sab] ] ). 
+             
 
 horario( new_york, washington,
            [  9:10 / 11:45 / united614 / todos,
              14:45 / 17:20 / united805 / todos ] ). 
+horario( washington, new_york,
+           [ 12:00 / 14:35 / united616 / todos,
+             17:45 / 20:20 / united807 / todos ] ). 
+             
 
 horario( chicago, miami,
            [  8:30 / 11:20 / nw510 / todos,
              11:00 / 13:50 / aa459 / todos ] ). 
-
+horario( miami, chicago,
+           [ 11:50 / 14:40 / nw520 / todos,
+             14:00 / 16:50 / aa499 / todos ] ). 
+             
 
 horario( los_angeles, san_francisco,
            [ 11:30 / 12:40 / sw322 / [mar,jue] ] ). 
@@ -43,8 +58,13 @@ horario( seattle, san_francisco,
 
 horario( dallas, san_francisco,
            [ 13:30 / 14:40 / nw323 / [mar,jue] ] ). 
+horario( san_francisco, dallas,
+           [ 15:00 / 16:10 / nw626 / [mar,jue] ] ). 
 
 
 horario( boston, new_york,
            [ 9:00 / 9:40 / aa613 / [lun,mar,mie,jue,vie,sab],
             16:10 / 16:55 / united806 / [lun,mar,mie,jue,vie,dom] ] ). 
+horario( boston, new_york,
+           [ 10:00 / 10:40 / aa666 / [lun,mar,mie,jue,vie,sab],
+            17:20 / 18:05 / united806 / [lun,mar,mie,jue,vie,dom] ] ). 
