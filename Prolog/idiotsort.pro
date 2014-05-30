@@ -8,7 +8,7 @@
 
 idiotsort([],[])   :- !.
 idiotsort([X],[X]) :- !.
-idiotsort(X,Y)     :- permutation(X,Y), ordenada(Y).
+idiotsort(X,Y)     :- permutation(X,Y), ordenada(Y), !.
 
 ordenada([X]).
 ordenada([X|[X1|Xs]]) :- X=<X1, ordenada([X1|Xs]).
