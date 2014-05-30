@@ -1,5 +1,6 @@
 %Definicion de operador :
-:- op(500, yfx, :).
+:- op(10, xfx, :).
+:(X,Y).
 
 %Base de datos de vuelos
 horario( new_york, chicago,
