@@ -1,5 +1,7 @@
+%Definicion de operador :
 :- op(500, yfx, :).
 
+%Base de datos de vuelos
 horario( new_york, chicago,
            [  9:40 / 10:50 / nw4733 / todos,
              13:40 / 14:50 / nw4773 / habiles,
@@ -68,3 +70,27 @@ horario( boston, new_york,
 horario( boston, new_york,
            [ 10:00 / 10:40 / aa666 / [lun,mar,mie,jue,vie,sab],
             17:20 / 18:05 / united806 / [lun,mar,mie,jue,vie,dom] ] ). 
+            
+%Definicion de predicado dia
+dia(lun,todos).
+dia(mar,todos).
+dia(mie,todos).
+dia(jue,todos).
+dia(vie,todos).
+dia(sab,todos).
+dia(dom,todos).
+dia(lun,habiles).
+dia(mar,habiles).
+dia(mie,habiles).
+dia(jue,habiles).
+dia(vie,habiles).
+dia(lun,lun).
+dia(mar,mar).
+dia(mie,mie).
+dia(jue,jue).
+dia(vie,vie).
+dia(sab,sab).
+dia(dom,dom).
+
+%operaciones con operadores propios, diferencia entre horario.
+transbordo([_,_,(_,X,_,_)],[_,Z,(_,Y,_,_)]) :- Z is new_york.
