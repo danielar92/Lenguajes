@@ -6,9 +6,8 @@
 %                              Lista ordenados ascendentemente
 % idiotsort(list,list) (?,?)
 
-idiotsort([],[])   :- !.
-idiotsort([X],[X]) :- !.
-idiotsort(X,Y)     :- permutation(X,Y), ordenada(Y), !.
+idiotsort([],[]).
+idiotsort([X|Xs],Y)     :- idiotsort(Xs,Y1), select(X,Y,Y1), ordenada(Y), !.
 
 ordenada([X]).
 ordenada([X|[X1|Xs]]) :- X=<X1, ordenada([X1|Xs]).
