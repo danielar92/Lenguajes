@@ -1,58 +1,95 @@
+% 2 Diabolic
 % Patrick Rengifo 09-10703
-% Daniela Rodríguez 09-10735
-% Ejercicio 2
+% Daniela Rodriguez 09-10735
 
 
-% Caso base donde una lista es vacía. La suma es 0
-list_sum([], 0).
+:- dynamic(visit/1).
 
-% Suma de los elementos en una lista. Triunfa si la suma es igual a TotalSum
-list_sum([Head | Tail], TotalSum) :-
-    list_sum(Tail, Sum1),
-    TotalSum is Head + Sum1.
+% Distintas operaciones sobre la matriz
 
-% Chequeamos que las sumas de las filas columnas y diagonales sean iguales
-check(A, B, C, D) :-
-    list_sum(A, SumA),
-    list_sum(B, SumB),
-    list_sum(C, SumC),
-    list_sum(D, SumD),
-    SumA == SumB,
-    SumB == SumC,
-    SumC == SumD.
+transpose([A,B,C,D,
+           E,F,G,H,
+           I,J,K,L,
+           M,N,O,P],
+          [M,I,E,A,
+           N,J,F,B,
+           O,K,G,C,
+           P,L,H,D]).
+
+reflect([A,B,C,D,
+         E,F,G,H,
+         I,J,K,L,
+         M,N,O,P],
+        [P,O,N,M,
+         L,K,J,I,
+         H,G,F,E,
+         D,C,B,A]).
+
+rotate_rows([A,B,C,D,
+             E,F,G,H,
+             I,J,K,L,
+             M,N,O,P],
+            [M,N,O,P,
+             A,B,C,D,
+             E,F,G,H,
+             I,J,K,L]).
+
+rotate_cols([A,B,C,D,
+             E,F,G,H,
+             I,J,K,L,
+             M,N,O,P],
+            [D,A,B,C,
+             H,E,F,G,
+             L,I,J,K,
+             P,M,N,O]).
+
+convolution([A,B,C,D,
+             E,F,G,H,
+             I,J,K,L,
+             M,N,O,P],
+           [A,D,H,E,
+            B,C,G,F,
+            N,O,K,J,
+            M,P,L,I]).
 
 
-% Lo unificamos con todas las permutaciones del cuadrado mágico 4x4
-diabolico([A, B, C, D,
-           E, F, G, H,
-           I, J, K, L,
-           M, N, O, P]) :-
+% Pandiagonal base.
 
-    permutation([1,2,3,4,
-                 5,6,7,8,
-                 9,10,11,12,
-                 13,14,15,16],
-                [A, B, C, D,
-                 E, F, G, H,
-                 I, J, K, L,
-                 M, N, O, P]),
-    check([A, B, C, D],
-          [E, F, G, H],
-          [I, J, K, L],
-          [M, N, O, P]),
-    check([A, E, I, M],
-          [B, F, J, N],
-          [C, G, K, O],
-          [D, H, L, P]),
-    check([M, B, G, L],
-          [I, N, C, H],
-          [A, F, K, P],
-          [E, J, O, D]),
-    check([P, C, F, I],
-          [L, O, B, E],
-          [H, K, N, A],
-          [D, G, J, M]),
-    check([A, B, C, D],
-          [A, E, I, M],
-          [M, B, G, L],
-          [P, C, F, I]).
+initial([1,8,10,15,
+         14,11,5,4,
+         7,2,16,9,
+         12,13,3,6]).
+
+
+% realizamos todas las operaciones posibles a la matriz.
+go(X) :- visit(X).
+
+
+go(X) :-
+    \+ visit(X),
+    assertz(visit(X)),
+    transpose(X, Y),
+    go(Y),
+    reflect(X, Z),
+    go(Z),
+    rotate_rows(X,W),
+    go(W),
+    rotate_cols(X,W1),
+    go(W1),
+    convolution(X,W2),
+    go(W2).
+
+
+diabolico(P) :-
+    retractall(visit(A)),
+    initial(X),
+    go(X),
+    visit(P).
+
+
+stopwatch(Predicate) :-
+    real_time(Start),
+    call(Predicate),
+    real_time(Finish),
+    Elapsed is (Finish - Start) / 1000,
+    format('~4f seg~N',[Elapsed]), !.

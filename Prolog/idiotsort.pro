@@ -1,8 +1,8 @@
 % 1 Idiot Sort
 % Patrick Rengifo 09-10703
-% Daniel Rodriguez 09-10735
+% Daniela Rodriguez 09-10735
 
-% idiotsort(Lista,Ordenada) :- Ordenada tiene los elementos de 
+% idiotsort(Lista,Ordenada) :- Ordenada tiene los elementos de
 %                              Lista ordenados ascendentemente
 % idiotsort(list,list) (?,?)
 
