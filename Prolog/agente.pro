@@ -1,8 +1,8 @@
-%Definicion de operador :
+% Definicion de operador :
 :- op(10, xfx, :).
 :(X,Y).
 
-%Base de datos de vuelos
+% Base de datos de vuelos
 horario( new_york, chicago,
            [  9:40 / 10:50 / nw4733 / todos,
              13:40 / 14:50 / nw4773 / habiles,
@@ -72,26 +72,58 @@ horario( boston, new_york,
            [ 10:00 / 10:40 / aa666 / [lun,mar,mie,jue,vie,sab],
             17:20 / 18:05 / united806 / [lun,mar,mie,jue,vie,dom] ] ). 
             
-%Definicion de predicado dia
-dia(lun,todos).
-dia(mar,todos).
-dia(mie,todos).
-dia(jue,todos).
-dia(vie,todos).
-dia(sab,todos).
-dia(dom,todos).
-dia(lun,habiles).
-dia(mar,habiles).
-dia(mie,habiles).
-dia(jue,habiles).
-dia(vie,habiles).
-dia(lun,lun).
-dia(mar,mar).
-dia(mie,mie).
-dia(jue,jue).
-dia(vie,vie).
-dia(sab,sab).
-dia(dom,dom).
+% Definicion de predicado dia para el uso de todos y habiles en horario.
+dia(X,Y)       :- member(X,Y),!.
+dia(X,todos)   :- member(X, [lun,mar,mie,jue,vie,sab,dom]),!.
+dia(X,habiles) :- member(X, [lun,mar,mie,jue,vie]),!.
 
-%operaciones con operadores propios, diferencia entre horario.
-transbordo([_,_,(_,X,_,_)],[_,Z,(_,Y,_,_)]) :- Z is new_york.
+% Tiempos de transferencia segun el tipo de aeropuerto.
+% 90: aeropuerto grande, 60: aeropuerto mediano, 40: aeropuerto pequeno
+tiempo(X,90) :- member(X, [new_york,chicago,los_angeles]),!.
+tiempo(X,60) :- member(X, [san_francisco,dallas,miami]),!.
+tiempo(_,40).
+
+% ruta( Ciudad1, Ciudad2, Dia, Ruta):
+% Ruta es una secuencia de vuelos en el Dia, empenzado en Ciudad1, y finalizando en Ciudad2
+
+% Caso base, cuando el vuelo es directo
+ruta( P1, P2, Dia, [ P1 / P2 / Fnum / Deptime ] )  :-  
+  vuelo( P1, P2, Dia, Fnum, Deptime, _).
+  
+  
+% Caso cuando no hay vuelo directo y hay que gacer escalas
+ruta( P1, P2, Dia, [ (P1 / P3 / Fnum1 / Dep1) | RestRuta] )  :- 
+  append(RestRuta,_,[_,_,_]),              % Limita la cantidad de vuelos para no exceder la pila
+  ruta( P3, P2, Dia, RestRuta),            % Existe un ruta entre las dos ciudades
+  vuelo( P1, P3, Dia, Fnum1, Dep1, Arr1),  % Existe un vuelo del inicio a la escala
+  salida( RestRuta, Dep2),                % Hora de salida del segundo vuelo                        
+  transbordo( Arr1, Dep2, P2).             % Suficiente tiempo para hacer transbordo                           
+
+vuelo( Ciudad1, Ciudad2, Dia, Fnum, Deptime, Arrtime)  :-
+   horario( Ciudad1, Ciudad2, Flightlist),
+   member( Deptime / Arrtime / Fnum / Dialist , Flightlist),
+   dia( Dia, Dialist).
+
+salida( [ P1 / P2 / Fnum / Dep | _], Dep).
+
+transbordo( Hours1:Mins1, Hours2:Mins2, Ciudad)  :-
+   tiempo(Ciudad,N),
+   60 * (Hours2 - Hours1) + Mins2 - Mins1 >= N.
+   
+%transbordo( Hours1:Mins1, Hours2:Mins2)  :-
+   %60 * (Hours2 - Hours1) + Mins2 - Mins1 >= 40.
+
+%%% Permutations.
+insertar(X,List, NewList) :- select(X, NewList, List).
+
+perm1([],[]).
+perm1([X|Xs], L) :- perm1(Xs,L1), insertar(X, L1, L).
+
+
+% Interfaz grafica para el programa
+ui :- write('Bienvenido al agente de viajes Prolog'), nl, 
+        write('Que desea hacer:'), nl,
+        write('1: Plan a ruta between two cities'), nl, 
+        write('2: Take a tour'), nl,
+        write('3: exit'),nl,
+        read(X), process_choice(X).
