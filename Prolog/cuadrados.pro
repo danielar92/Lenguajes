@@ -53,13 +53,15 @@ convolution([A,B,C,D,
             M,P,L,I]).
 
 
-% Trans.....mcdito
+% Pandiagonal base.
 
 initial([1,8,10,15,
          14,11,5,4,
          7,2,16,9,
          12,13,3,6]).
 
+
+% realizamos todas las operaciones posibles a la matriz.
 go(X) :- visit(X).
 
 
