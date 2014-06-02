@@ -25,6 +25,7 @@ reflect([A,B,C,D,
          H,G,F,E,
          D,C,B,A]).
 
+% Shift de una fila hacia abajo
 rotate_rows([A,B,C,D,
              E,F,G,H,
              I,J,K,L,
@@ -34,6 +35,7 @@ rotate_rows([A,B,C,D,
              E,F,G,H,
              I,J,K,L]).
 
+% Shift de una columna a la derecha
 rotate_cols([A,B,C,D,
              E,F,G,H,
              I,J,K,L,
@@ -81,7 +83,7 @@ go(X) :-
 
 
 diabolico(P) :-
-    retractall(visit(A)),
+    retractall(visit(_)),
     initial(X),
     go(X),
     visit(P).
