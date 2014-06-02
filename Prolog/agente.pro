@@ -1,3 +1,7 @@
+% 3 Agente de viajes
+% Patrick Rengifo 09-10703
+% Daniela Rodriguez 09-10735
+
 % Definicion de operador :
 :- op(10, xfx, :).
 :(X,Y).
@@ -72,33 +76,25 @@ horario( boston, new_york,
            [ 10:00 / 10:40 / aa666 / [lun,mar,mie,jue,vie,sab],
             17:20 / 18:05 / united806 / [lun,mar,mie,jue,vie,dom] ] ). 
             
-% Definicion de predicado dia para el uso de todos y habiles en horario.
+% dia(Dia,listaDias) :- predicado dia para el uso de todos y habiles en horario
+% dia(dia,list) (?,?)
 dia(X,Y)       :- member(X,Y).
 dia(X,todos)   :- member(X, [lun,mar,mie,jue,vie,sab,dom]).
 dia(X,habiles) :- member(X, [lun,mar,mie,jue,vie]).
 
-% Para saber que dia le sigue a otro
-siguiente(lun,mar).
-siguiente(mar,mie).
-siguiente(mie,jue).
-siguiente(jue,vie).
-siguiente(vie,sab).
-siguiente(sab,dom).
-siguiente(dom,lun).
-
-% Tiempos de transferencia segun el tipo de aeropuerto.
+% tiempo(Ciudad, Min) :-Tiempos de transferencia segun el tipo de aeropuerto.
 % 90: aeropuerto grande, 60: aeropuerto mediano, 40: aeropuerto pequeno
+% tiempo(ciudad, min) (?,?)
 tiempo(X,90) :- member(X, [new_york,chicago,los_angeles]),!.
 tiempo(X,60) :- member(X, [san_francisco,dallas,miami]),!.
 tiempo(_,40).
 
-% ruta(Origen, Destino, Dia, Ruta):
+% ruta(Origen, Destino, Dia, Ruta) :-
 % Ruta es una secuencia de vuelos en el Dia, empenzado en Origen, y finalizando en Destino
 
 % Caso base, cuando el vuelo es directo
 ruta( Origen, Destino, Dia, [ Origen / Destino / Fnum / Deptime ] )  :-  
   vuelo( Origen, Destino, Dia, Fnum, Deptime, _).
-  
   
 % Caso cuando no hay vuelo directo y hay que gacer escalas
 ruta( Origen, Destino, Dia, [ (Origen / P3 / Fnum1 / Dep1) | RestRuta] )  :- 
@@ -108,25 +104,58 @@ ruta( Origen, Destino, Dia, [ (Origen / P3 / Fnum1 / Dep1) | RestRuta] )  :-
   salida( RestRuta, Dep2),                      % Hora de salida del segundo vuelo                        
   transbordo( Arr1, Dep2, Destino).             % Suficiente tiempo para hacer transbordo                           
 
+% vuelo(Origen, Destino, Dia, Fnum, Deptime, Arrtime) :- Triunfa si existe un
+% un vuelo Fnum, desde Origen hasta Destino en el Dia que sale a las Deptime
+% y llega a las Arrtime.
 vuelo( Ciudad1, Ciudad2, Dia, Fnum, Deptime, Arrtime)  :-
    horario( Ciudad1, Ciudad2, Flightlist),
    member( Deptime / Arrtime / Fnum / Dialist , Flightlist),
    dia( Dia, Dialist).
 
+% salida(Horario, Deptime) :- Determina la hora de salida del primer elemento
+% de una lista de horarios.
 salida( [ Origen / Destino / Fnum / Dep | _], Dep).
 
+% transbordo(Hora1, Hora2, Ciudad) :- Triunfa si hay suficiente tiempo para 
+% hacer escala en la ciudad con las horas indicadas.
 transbordo( H1:M1, H2:M2, Ciudad)  :-
    tiempo(Ciudad,N),
    60 * (H2 - H1) + M2 - M1 >= N.
 
-%%% Permutations.
-insertar(X,List, NewList) :- select(X, NewList, List).
+% element_at(Elem, List, Pos) :- Funciona como nth/3 pero contando desde 0.
+element_at(X, List, Pos) :-
+    element_at(X, List, 0, Pos).
+element_at(X, [X|_], Pos, Pos).
+element_at(X, [_|T], Acc, Pos) :-
+    Acc1 is Acc + 1,
+    element_at(X, T, Acc1, Pos).
 
-perm1([],[]).
-perm1([X|Xs], L) :- perm1(Xs,L1), insertar(X, L1, L).
+% search(Elem, List, Rest) :- Triunfa al encontrar un Elem que al ser
+% ser removido de List, resulta la lista Rest.
+search(Elem, List, Rest) :-
+        select(Elem, List, Rest0), !,
+        Rest = Rest0.
+% gira(Ciudades, Dias, Ruta) :- determina una serie de vuelo Ruta para
+%recorrer una serie de Ciudades en tantos Dias cada una.
+gira(Ciudades,Dias,Ruta) :- tour(Ciudades, Dia, Dias, Ruta).
 
-gira(_,_,[]).
-%gira([C|Cs],[X|Xs],Ruta) :- permutation([C|Cs], [P1, P2, P3]), vuelo(C, P1, X, 
+%funcion auxiliar de gira
+tour([_],_,_,[]).
+tour(Ciudades, Dia, Dias, Ruta) :-
+    search(C1, Ciudades, RestCiudades),
+    search(C2, RestCiudades, _),
+    sumar_dia(Dia, Dias, Nuevo),
+    tour(RestCiudades,Nuevo,Dias,R2),
+    vuelo(C1,C2,Dia,NumVuelo,Salida,Arrtime),
+    append([C1,C2,Dia,NumVuelo,Salida],R2,Ruta).
+
+% sumar_dia(Dia, Cantidad, Nuevo) :- Triunfa si el Dia al sumarle Cantidad,
+% es igual a Nuevo.
+sumar_dia(Dia, Cantidad, Nuevo) :- 
+    element_at(Dia, [lun,mar,mie,jue,vie,sab,dom], X),
+    Y is (X+Cantidad),
+    Z is (Y mod 7),
+    element_at(Nuevo, [lun,mar,mie,jue,vie,sab,dom], Z).
 
 % Interfaz grafica para el programa
 ui :- write('Bienvenido al agente de viajes Prolog'), nl, 
@@ -136,7 +165,7 @@ ui :- write('Bienvenido al agente de viajes Prolog'), nl,
         write('3: En que dias puedo viajar entre A y B sin escalas'),nl,
         write('4: Como puedo hacer una gira entra A y B, con paradas de N dias'),nl,
         write('5: Como puedo viajar ida y vuelta entre A y B, con posibles paradas de N dias'),nl,
-        write('6: Salir'),nl,
+        write('Coloque un punto (.) al final del comando, i.e 1. '), nl,
         read(X), process_choice(X).
         
 process_choice(1) :- write('Indique ciudad de origen'), nl, read(O), 
@@ -156,12 +185,12 @@ process_choice(3) :-  write('Indique ciudad de origen'), nl, read(O),
                       vuelo(O, D, Dia, _, _, _),
                       write('Dias: '), write(Dia),nl.
                       
-process_choice(4) :-  write('Indique ciudad de origen'), nl, read(O),
-                      write('Indique ciudad de destino'), nl, read(D),
-                      vuelo(O, D, Dia, _, _, _),
-                      write('Dias: '), write(Dia),nl.
+process_choice(4) :-  write('Indique lista de ciudades a visitar'), nl, read(L),
+                      write('Indique cantidad de dias a estar cada dia'), nl, read(D),
+                      gira(L, D, X),
+                      write('Gira: '), write(X),nl.
                       
-process_choice(5) :-  write('Indique ciudad de origen'), nl, read(O),
-                      write('Indique ciudad de destino'), nl, read(D),
-                      vuelo(O, D, Dia, _, _, _),
-                      write('Dias: '), write(Dia),nl.
+process_choice(5) :-  write('Indique las dos ciudades ida y vuelta'), nl, read(L),
+                      gira(L, D, X),
+                      write('Dias: '), write(D),nl,
+                      write('Ruta: '), write(X),nl.
