@@ -6,31 +6,52 @@
 
 module Bfs
   def find(start, predicate)
-#   def bfs(start_node_key, find_node)
-#     keys_explored = {start.each(1)}
-#     keys_explored = Hash.new.tap do |h|
-#       @nodes.keys.each do |key|
-#         h[key] = false
-#       end
-#     end
-#  
-#     items = [start]
-#     keys_explored[start] = true
-#  
-#     while item = items.delete_at(0)
-#       return @nodes[find_node] if item == find_node
-#  
-#       @edges[item].each do |head, value|
-#         unless keys_explored[head]
-#           keys_explored[head] = true
-#           items.push head
-#         end
-#       end
-#     end
-#     
-#     return nil
+    # Conjunto de nodos visitados
+    nodes = {start.value => false}
+    
+    # Creamos la pila de nodos
+    items        = [start]
+    nodes[start.value] = true
+    
+    while item = items.delete_at(0)
+      # Si es el nodo cumple con el predicado, lo retornamos.
+      return item if item.predicate?
+      
+      # Sino buscamos sus adyacentes y los empilamos.
+      item.each(1) do |x| 
+        unless nodes[x.value] 
+          nodes[x.value] = true 
+          items.push(x)
+        end 
+      end
+    end
+    # Si no encontramos nada
+    return nil
   end
   def path(start, predicate)
+    # Conjunto de nodos visitados
+    nodes = {start.value => false}
+    # Camino vacio
+    path = [start]
+    
+    # Creamos la pila de nodos
+    items        = [start]
+    nodes[start.value] = true
+    
+    while item = items.delete_at(0)
+      # Si es el nodo cumple con el predicado, lo retornamos.
+      return item if item.predicate?
+      
+      # Sino buscamos sus adyacentes y los empilamos.
+      item.each(1) do |x| 
+        unless nodes[x.value] 
+          nodes[x.value] = true 
+          items.push(x)
+        end 
+      end
+    end
+    # Si no encontramos nada
+    return nil
   end
   def walk(start, predicate)
   end
@@ -49,14 +70,16 @@ class BinTree
     @right = r
   end
   def each(b)
-    @left.each(b) {|x| yield x } unless @left.nil?
     yield self
-    @right.each(b) {|x| yield x } unless @right.nil?
+    yield @left unless @left.nil?
+    yield @right unless @right.nil?
   end
 end
 
-b = BinTree.new(5,BinTree.new(4))
-b.each(1) {|x| puts x.value}
+b = BinTree.new(5,BinTree.new(4, BinTree.new(3)))
+# b.each(1) {|x| puts x.value}
+res = b.find(b,7)
+puts res.value unless res.nil?
 
 class GraphNode
   include Bfs
@@ -73,7 +96,9 @@ class GraphNode
 end
 
 g = GraphNode.new(4, [GraphNode.new(3), GraphNode.new(2)])
-g.each(1) {|x| puts x.value}
+# g.each(1) {|x| puts x.value}
+res = g.find(g,8)
+puts res.value unless res.nil?
 
 # Arboles Implicitos
 
