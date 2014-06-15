@@ -17,42 +17,49 @@ end
 
 class BinTree
   include Bfs
-  attr_accessor :value, # Valor almacenado en el nodo
-                :left, # BinTree izquierdo
-                :right # BinTree derecho
-  def initialize(v,l,r)
+  attr_accessor :value,    # Valor almacenado en el nodo
+                :left,     # BinTree izquierdo
+                :right     # BinTree derecho
+  def initialize(v,l=nil,r=nil)
     @value = v
     @left  = l
     @right = r
   end
   def each(b)
-    @left.each {|binTree| yield binTree } unless @left.nil?
+    @left.each(b) {|x| yield x } unless @left.nil?
     yield self
-    @right.each {|binTree| yield binTree } unless @right.nil?
+    @right.each(b) {|x| yield x } unless @right.nil?
   end
 end
 
+# b = BinTree.new(5,BinTree.new(4))
+# b.each(1) {|x| puts x.value}
+
 class GraphNode
   include Bfs
-  attr_accessor :value, # Valor alamacenado en el nodo
-                :children # Arreglo de sucesores GraphNode
-  def initialize(v,c)
+  attr_accessor :value,     # Valor alamacenado en el nodo
+                :children   # Arreglo de sucesores GraphNode
+  def initialize(v,c=nil)
     @value    = v
     @children = c
   end
   def each(b)
-    @children.each {|graphNode| yield graphNode } unless @children.nil?
+    yield self
+    @children.each {|x| yield x } unless @children.nil?
   end
 end
+
+# g = GraphNode.new(4, [GraphNode.new(3), GraphNode.new(2)])
+# g.each(1) {|x| puts x.value}
 
 # Arboles Implicitos
 
 def LCR
   include Bfs
   attr_reader :value
-  def initialize(?) # Indique los argumentos
+#   def initialize(?) # Indique los argumentos
     # Su codigo aqui
-  end
+#   end
   def each(p)
     # Su codigo aqui
   end
