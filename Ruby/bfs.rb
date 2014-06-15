@@ -6,6 +6,29 @@
 
 module Bfs
   def find(start, predicate)
+#   def bfs(start_node_key, find_node)
+#     keys_explored = {start.each(1)}
+#     keys_explored = Hash.new.tap do |h|
+#       @nodes.keys.each do |key|
+#         h[key] = false
+#       end
+#     end
+#  
+#     items = [start]
+#     keys_explored[start] = true
+#  
+#     while item = items.delete_at(0)
+#       return @nodes[find_node] if item == find_node
+#  
+#       @edges[item].each do |head, value|
+#         unless keys_explored[head]
+#           keys_explored[head] = true
+#           items.push head
+#         end
+#       end
+#     end
+#     
+#     return nil
   end
   def path(start, predicate)
   end
@@ -32,8 +55,8 @@ class BinTree
   end
 end
 
-# b = BinTree.new(5,BinTree.new(4))
-# b.each(1) {|x| puts x.value}
+b = BinTree.new(5,BinTree.new(4))
+b.each(1) {|x| puts x.value}
 
 class GraphNode
   include Bfs
@@ -49,8 +72,8 @@ class GraphNode
   end
 end
 
-# g = GraphNode.new(4, [GraphNode.new(3), GraphNode.new(2)])
-# g.each(1) {|x| puts x.value}
+g = GraphNode.new(4, [GraphNode.new(3), GraphNode.new(2)])
+g.each(1) {|x| puts x.value}
 
 # Arboles Implicitos
 
