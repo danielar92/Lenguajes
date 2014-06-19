@@ -4,6 +4,12 @@
 # Juego de manos
 
 class Movement
+
+  @beats = {
+    'Rock' => 'Paper',
+    'Paper' => 'Scissors',
+    'Scissors' => 'Rock'
+}
   class << self
     attr_accessor :symbol
   end
@@ -12,12 +18,10 @@ class Movement
     puts self.class
   end
 
-  # FIXME: mejorar
+  #FIXME EXPLOTO.
   def score(m)
    if (self.class==m.class) then [0,0]
-   elsif (self.class==Rock) and (m.class==Scissors) then [1,0]
-   elsif (self.class==Scissors) and (m.class==Paper) then [1,0]
-   elsif (self.class==Paper) and (m.class==Rock) then [1,0]
+   elsif self.to_s == @beats[m.to_s] then [1,0]
    else [0,1]
    end
 
@@ -62,14 +66,11 @@ class Strategy
      raise NotImplementedError
    end
 
-   # FIXME: no se. daniela dice que falta.
    def to_s
-     # puts self.class
-     # case movement
-     #   when :Biased
-     #    puts "\nParametro = <#@mhash>"
-     #   when :Uniform
-     # end
+     puts self.class
+     if self.class == Uniform or self.class == Biased
+       puts self.mhash
+     end
    end
 
    def reset
@@ -136,12 +137,9 @@ class Smart < Biased
   end
 
   def next(m)
-    # puts @s
     add_movement(m)
     if @s == 0
       next_movement = Movement.from_symbol @mhash.keys[@prng.rand(0..2)]
-      # puts 'aca'
-      # puts next_movement
     else
       next_movement = get_winning(super m)
     end
@@ -216,20 +214,15 @@ class Match
   end
 
   def rounds(n)
-    # puts n
     (1..n).each do |round|
       next_plays = @state.keys.map do |player|
         player_state = @state[player]
-        # puts player_state[:strategy]
-        # puts player_state[:last_play]
         [player, player_state[:strategy].next(player_state[:last_play])]
       end
 
-      # puts 'En esta rounda las jugadas fueron'
-      # puts next_plays[0][0], next_plays[0][1]
-      # puts next_plays[1][0], next_plays[1][1]
+
       score = next_plays[0][1].score(next_plays[1][1])
-      # puts score
+
 
       score.zip(next_plays).each do |tuple|
         player_score = tuple[0]
@@ -259,7 +252,8 @@ class Match
   end
 end
 
-simon = Biased.new({:Scissors => 1, :Paper => 1, :Rock => 10})
-daniela = Smart.new
-maldito_game = Match.new({:maldito => simon, :maldita => daniela})
-maldito_game.rounds 100
+
+x = Rock.new
+y = Paper.new
+
+x.score(y)
