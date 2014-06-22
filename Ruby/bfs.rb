@@ -7,6 +7,10 @@
 module Bfs
   # Recorrido BFS para encontrar un nodo que cumpla predicate
   def find(start, predicate)
+    if !(predicate.is_a?(Proc))
+      puts "No se ha pasado un predicado valido"
+      return nil
+    end
     # Conjunto de nodos visitados
     nodes = {start.value => false}
     
@@ -16,7 +20,7 @@ module Bfs
     
     while item = items.delete_at(0)
       # Si es el nodo cumple con el predicado, lo retornamos.
-      return item if item.value == predicate
+      return item if predicate.call(item.value)
       
       # Sino buscamos sus adyacentes y los empilamos.
       item.each(1) do |x| 
@@ -33,6 +37,10 @@ module Bfs
   # Recorrido BFS que devuelve el camino desde la raiz hasta el nodo que cumpla
   # el predicate
   def path(start, predicate)
+    if !(predicate.is_a?(Proc))
+      puts "No se ha pasado un predicado valido"
+      return nil
+    end
     # Conjunto de nodos visitados
     nodes = {start.value => false}
     # Camino vacio
@@ -45,7 +53,7 @@ module Bfs
     while item = items.delete_at(0)
       path.push(item.value)
       # Si es el nodo cumple con el predicado, lo retornamos.
-      return path if item.value == predicate
+      return path if predicate.call(item.value)
       
       # Sino buscamos sus adyacentes y los empilamos.
       item.each(1) do |x| 
@@ -73,8 +81,12 @@ module Bfs
     nodes[start.value] = true
     
     while item = items.delete_at(0)
-      path.push(item.value)
-      #aplicar el action
+      if action.is_a?(Proc)
+        path.push(action.call(item.value))
+      else
+        path.push(item.value)
+      end
+      
       
       # Sino buscamos sus adyacentes y los empilamos.
       item.each(1) do |x| 
@@ -140,12 +152,22 @@ end
 
 b = BinTree.new(5,BinTree.new(4, BinTree.new(3)))
 # b.each(1) {|x| puts x.value}
-res = b.find(b,4)
+res = b.find(b,lambda {|x| x<4})
+puts "find bintree"
 puts res.value unless res.nil?
-puts b.path(b,3)
-puts b.walk(b,3)
+puts "path bintree"
+puts b.path(b,lambda {|x| x==3})
+puts "walk bintree"
+puts b.walk(b,lambda{|x| x*2})
+puts "----"
+puts b.walk(b,2)
 
 g = GraphNode.new(4, [GraphNode.new(3), GraphNode.new(2)])
 # g.each(1) {|x| puts x.value}
-res = g.find(g,8)
+res = g.find(g,lambda {|x| x>8})
+puts "find graph"
 puts res.value unless res.nil?
+puts "path graph"
+puts g.path(g,lambda {|x| x==3})
+puts "walk graph"
+puts g.walk(g,3)
