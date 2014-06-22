@@ -5,11 +5,6 @@
 
 class Movement
 
-  @beats = {
-    'Rock' => 'Paper',
-    'Paper' => 'Scissors',
-    'Scissors' => 'Rock'
-}
   class << self
     attr_accessor :symbol
   end
@@ -18,12 +13,14 @@ class Movement
     puts self.class
   end
 
-  #FIXME EXPLOTO.
+
   def score(m)
-   if (self.class==m.class) then [0,0]
-   elsif self.to_s == @beats[m.to_s] then [1,0]
-   else [0,1]
-   end
+    if (self.class==m.class) then [0,0]
+    elsif (self.class==Rock) and (m.class==Scissors) then [1,0]
+    elsif (self.class==Scissors) and (m.class==Paper) then [1,0]
+    elsif (self.class==Paper) and (m.class==Rock) then [1,0]
+    else [0,1]
+    end
 
   end
 
@@ -56,20 +53,19 @@ end
 
 class Strategy
   @@seed = 42
-  # FIXME: errores malditos, errores.
   def initialize
     @prng = Random.new @@seed
   end
 
-  # FIXME: falta algo aqui generico
    def next(ms)
      raise NotImplementedError
    end
 
+   #Si es Uniform o Biased imprimimos su entrada inicial
    def to_s
      puts self.class
      if self.class == Uniform or self.class == Biased
-       puts self.mhash
+       puts @mhash
      end
    end
 
@@ -88,6 +84,7 @@ class Biased < Strategy
     build_sum_hash
   end
 
+  # Construye el hash que contiene el movimiento posible y su probabilidad asociadad
   def build_sum_hash
     @mhash_sum = {}
     @s = @mhash.values.reduce(:+)
@@ -98,6 +95,7 @@ class Biased < Strategy
     end
   end
 
+  #Selecciona el próximo movimiento a jugar de la "torta" construida en build_sum_hash
   def next(m)
     rng = @prng.rand(1..@s)
     nextSymbol = @mhash_sum.select { |k, v|  rng <= v }.sort_by { |k, v| v }
@@ -105,6 +103,7 @@ class Biased < Strategy
   end
 end
 
+#Uniform es un Biased con probabilidad de 1 para cada movimiento
 class Uniform < Biased
   def initialize(m)
     if m.empty? then
@@ -114,10 +113,12 @@ class Uniform < Biased
   end
 end
 
+# Smart es un Biased inicializado en 0.
 class Smart < Biased
   def initialize
     super ({:Scissors => 0, :Rock => 0, :Paper => 0})
   end
+  # A medida que va jugando el oponente se va sumando al hash de jugadas
   def add_movement(m)
     unless m.nil?
       @mhash[m.class.symbol] += 1
@@ -125,6 +126,7 @@ class Smart < Biased
     end
   end
 
+  # creamos el movimiento que gane al del oponente
   def get_winning(m)
     case m
     when Rock
@@ -152,11 +154,14 @@ class Smart < Biased
   end
 end
 
+#Juega el movimiento anterior del oponente.
 class Mirror < Strategy
   def initialize(first_play)
     @first_play = first_play
     @prev_play = nil
   end
+
+
   def next(m)
     if @prev_play.nil? then
       @prev_play = m
@@ -201,10 +206,12 @@ class Match
     @game_count = 0
   end
 
+  #retorna el otro jugador.
   def other_player(player)
     @state.keys.select { |k| k != player }.first
   end
 
+  # construye el diccionario con el resultado del juego
   def build_result
     result = {:Rounds => @game_count}
     @state.each_key do |k|
@@ -213,6 +220,7 @@ class Match
     return result
   end
 
+  #Se juegan n número de partidas
   def rounds(n)
     (1..n).each do |round|
       next_plays = @state.keys.map do |player|
@@ -223,7 +231,7 @@ class Match
 
       score = next_plays[0][1].score(next_plays[1][1])
 
-
+      # zippeamos el movimiento con el jugador que lo realizó
       score.zip(next_plays).each do |tuple|
         player_score = tuple[0]
         who_played = tuple[1][0]
@@ -236,6 +244,7 @@ class Match
     return build_result
   end
 
+  # retorna si alguien ya ganó mas de n veces
   def someone_won?(n)
     return @state.values.map { |ps| ps[:win_count]  >= n }.any?
   end
@@ -244,6 +253,7 @@ class Match
     return @state.values.map { |ps| n-ps[:win_count] }.min
   end
 
+  # Se juega hasta que alguien tenga n rondas ganadas.
   def upto(n)
     until someone_won?(n)
       last = rounds(at_least_to(n))
@@ -251,9 +261,3 @@ class Match
     return last
   end
 end
-
-
-x = Rock.new
-y = Paper.new
-
-x.score(y)
