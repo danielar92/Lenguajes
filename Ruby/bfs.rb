@@ -23,7 +23,7 @@ module Bfs
       return item if predicate.call(item.value)
       
       # Sino buscamos sus adyacentes y los empilamos.
-      item.each(1) do |x| 
+      item.each do |x| 
         unless nodes[x.value] 
           nodes[x.value] = true 
           items.push(x)
@@ -56,7 +56,7 @@ module Bfs
       return path if predicate.call(item.value)
       
       # Sino buscamos sus adyacentes y los empilamos.
-      item.each(1) do |x| 
+      item.each do |x| 
         unless nodes[x.value] 
           nodes[x.value] = true 
           items.push(x)
@@ -89,7 +89,7 @@ module Bfs
       
       
       # Sino buscamos sus adyacentes y los empilamos.
-      item.each(1) do |x| 
+      item.each do |x| 
         unless nodes[x.value] 
           nodes[x.value] = true 
           items.push(x)
@@ -113,7 +113,8 @@ class BinTree
     @left  = l
     @right = r
   end
-  def each(b)
+  # Metodo propio de each
+  def each
     yield self
     yield @left unless @left.nil?
     yield @right unless @right.nil?
@@ -128,7 +129,8 @@ class GraphNode
     @value    = v
     @children = c
   end
-  def each(b)
+  # Metodo propio de each
+  def each
     yield self
     @children.each {|x| yield x } unless @children.nil?
   end
@@ -136,38 +138,52 @@ end
 
 # Arboles Implicitos
 
-def LCR
+class LCR
   include Bfs
   attr_reader :value
-#   def initialize(?) # Indique los argumentos
-    # Su codigo aqui
-#   end
-  def each(p)
-    # Su codigo aqui
+  # Un estado del problema se modela con un hash con keys :where (donde esta
+  # el bote), :left (que hay en la orilla izquierda, y :right (que hay en la
+  # orilla derecha). Con los valores :repollo, :lobo, :cabra.
+  def initialize(w,l,r)
+    @value = {:where => w,
+              :left => l,
+              :right => r}
   end
-  def solve       
-    # Su codigo aqui
+  # Metodo privado para saber si un estado generado es valido para nuestro
+  # problema a resolver. I.e. la cabra no puede estar con el lobo en la 
+  # misma orilla sin el humano.
+  def is_valid?
+    if @value.has_value?([:cabra,:lobo]) || @value.has_value?([:cabra,:lobo]) ||
+        @value.has_value?([:lobo,:cabra]) || @value.has_value?([:lobo,:cabra])
+      return false
+    elsif @value.has_value?([:cabra,:repollo]) || @value.has_value?([:cabra,:repollo]) ||
+        @value.has_value?([:repollo,:cabra]) || @value.has_value?([:repollo,:cabra])
+      return false
+    else
+      return true
+    end
   end
+  # Metodo propio de each.
+  def each
+    if is_valid?
+      puts "woohooo"
+    else
+      puts "damn women"
+    end
+  end
+  # Dado el estado final del problema LCR, se busca el camino que proporcione
+  # la solucion al mismo.
+  def solve
+    final = lambda{|x| x.value[:right].has_value?([:cabra,:lobo,:repollo]) ||
+                    x.value[:right].has_value?([:lobo,:repollo,:cabra]) ||
+                    x.value[:right].has_value?([:cabra,:repollo,:lobo])}
+    result = self.path(self, final)
+    if result.nil?
+      puts "El problema no tiene solucion"
+    else
+      puts "El resultado al problema es"
+      puts result
+    end
+  end
+  private :is_valid?
 end
-
-b = BinTree.new(5,BinTree.new(4, BinTree.new(3)))
-# b.each(1) {|x| puts x.value}
-res = b.find(b,lambda {|x| x<4})
-puts "find bintree"
-puts res.value unless res.nil?
-puts "path bintree"
-puts b.path(b,lambda {|x| x==3})
-puts "walk bintree"
-puts b.walk(b,lambda{|x| x*2})
-puts "----"
-puts b.walk(b,2)
-
-g = GraphNode.new(4, [GraphNode.new(3), GraphNode.new(2)])
-# g.each(1) {|x| puts x.value}
-res = g.find(g,lambda {|x| x>8})
-puts "find graph"
-puts res.value unless res.nil?
-puts "path graph"
-puts g.path(g,lambda {|x| x==3})
-puts "walk graph"
-puts g.walk(g,3)
