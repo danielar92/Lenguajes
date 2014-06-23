@@ -149,15 +149,22 @@ class LCR
               :left => l,
               :right => r}
   end
-  # Metodo privado para saber si un estado generado es valido para nuestro
+  # Metodo para saber si un estado generado es valido para nuestro
   # problema a resolver. I.e. la cabra no puede estar con el lobo en la 
-  # misma orilla sin el humano.
+  # misma orilla sin el humano. Ademas mantiene que solo haya un elemento
+  # en cada orilla.
   def is_valid?
-    if @value.has_value?([:cabra,:lobo]) || @value.has_value?([:cabra,:lobo]) ||
-        @value.has_value?([:lobo,:cabra]) || @value.has_value?([:lobo,:cabra])
-      return false
-    elsif @value.has_value?([:cabra,:repollo]) || @value.has_value?([:cabra,:repollo]) ||
-        @value.has_value?([:repollo,:cabra]) || @value.has_value?([:repollo,:cabra])
+    if @value.has_value?([:cabra,:lobo]) || 
+       @value.has_value?([:cabra,:lobo]) ||
+       @value.has_value?([:lobo,:cabra]) ||
+       @value.has_value?([:lobo,:cabra]) ||
+       @value.has_value?([:cabra,:repollo]) || 
+       @value.has_value?([:cabra,:repollo]) ||
+       @value.has_value?([:repollo,:cabra]) || 
+       @value.has_value?([:repollo,:cabra]) ||
+       (@value[:left].include?(:lobo) && @value[:right].include?(:lobo)) ||
+       (@value[:left].include?(:cabra) && @value[:right].include?(:cabra)) ||
+       (@value[:left].include?(:repollo) && @value[:right].include?(:repollo))
       return false
     else
       return true
@@ -165,18 +172,38 @@ class LCR
   end
   # Metodo propio de each.
   def each
+    # Self es valido
     if is_valid?
-      puts "woohooo"
-    else
-      puts "damn women"
+      # Movemos el barco a la orilla contraria solo o con algo
+      if @value[:where] == :izquierda
+        # Barco solo
+        barco = LCR.new(:derecha, @value[:left], @value[:right])
+        yield barco unless !(barco.is_valid?)
+        # Barco con algo
+        @value[:left].each do |x| barco = LCR.new(:derecha, 
+                                                  @value[:left].delete(x),
+                                                  @value[:right].push(x))
+          yield barco unless !(barco.is_valid?)
+        end
+      else 
+        # Barco solo
+        barco = LCR.new(:izquierda, @value[:left], @value[:right])
+        yield barco unless !(barco.is_valid?)
+        # Barco con algo
+        @value[:right].each do |x| barco = LCR.new(:izquierda, 
+                                                   @value[:left].push(x),
+                                                   @value[:right].delete(x))
+          yield barco unless !(barco.is_valid?)
+        end
+      end
     end
   end
   # Dado el estado final del problema LCR, se busca el camino que proporcione
   # la solucion al mismo.
   def solve
-    final = lambda{|x| x.value[:right].has_value?([:cabra,:lobo,:repollo]) ||
-                    x.value[:right].has_value?([:lobo,:repollo,:cabra]) ||
-                    x.value[:right].has_value?([:cabra,:repollo,:lobo])}
+    final = lambda{|x| x[:right] == [:cabra,:lobo,:repollo] ||
+                    x[:right] == [:lobo,:repollo,:cabra] ||
+                    x[:right] ==[:cabra,:repollo,:lobo]}
     result = self.path(self, final)
     if result.nil?
       puts "El problema no tiene solucion"
@@ -185,5 +212,7 @@ class LCR
       puts result
     end
   end
-  private :is_valid?
 end
+
+l = LCR.new(:izquierda,[:lobo,:repollo,:cabra],[])
+l.solve
