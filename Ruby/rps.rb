@@ -70,6 +70,7 @@ class Strategy
    end
 
    def reset
+     @prng = Random.new @@seed
    end
 end
 
@@ -164,13 +165,11 @@ class Mirror < Strategy
 
   def next(m)
     if @prev_play.nil? then
-      @prev_play = m
-      @first_play
+      @prev_play = @first_play
     else
-      save = @prev_play
       @prev_play = m
-      save
     end
+    @prev_play
   end
   def reset
     @prev_play = nil
@@ -243,6 +242,7 @@ class Match
     end
     return build_result
   end
+
 
   # retorna si alguien ya ganó mas de n veces
   def someone_won?(n)
