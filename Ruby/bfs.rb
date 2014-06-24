@@ -7,6 +7,10 @@
 module Bfs
   # Recorrido BFS para encontrar un nodo que cumpla predicate
   def find(start, predicate)
+    if !(predicate.is_a?(Proc))
+      puts "No se ha pasado un predicado valido"
+      return nil
+    end
     # Conjunto de nodos visitados
     nodes = {start.value => false}
     
@@ -16,10 +20,10 @@ module Bfs
     
     while item = items.delete_at(0)
       # Si es el nodo cumple con el predicado, lo retornamos.
-      return item if item.value == predicate
+      return item if predicate.call(item.value)
       
       # Sino buscamos sus adyacentes y los empilamos.
-      item.each(1) do |x| 
+      item.each do |x| 
         unless nodes[x.value] 
           nodes[x.value] = true 
           items.push(x)
@@ -33,6 +37,10 @@ module Bfs
   # Recorrido BFS que devuelve el camino desde la raiz hasta el nodo que cumpla
   # el predicate
   def path(start, predicate)
+    if !(predicate.is_a?(Proc))
+      puts "No se ha pasado un predicado valido"
+      return nil
+    end
     # Conjunto de nodos visitados
     nodes = {start.value => false}
     # Camino vacio
@@ -45,10 +53,10 @@ module Bfs
     while item = items.delete_at(0)
       path.push(item.value)
       # Si es el nodo cumple con el predicado, lo retornamos.
-      return path if item.value == predicate
+      return path if predicate.call(item.value)
       
       # Sino buscamos sus adyacentes y los empilamos.
-      item.each(1) do |x| 
+      item.each do |x| 
         unless nodes[x.value] 
           nodes[x.value] = true 
           items.push(x)
@@ -73,11 +81,15 @@ module Bfs
     nodes[start.value] = true
     
     while item = items.delete_at(0)
-      path.push(item.value)
-      #aplicar el action
+      if action.is_a?(Proc)
+        path.push(action.call(item.value))
+      else
+        path.push(item.value)
+      end
+      
       
       # Sino buscamos sus adyacentes y los empilamos.
-      item.each(1) do |x| 
+      item.each do |x| 
         unless nodes[x.value] 
           nodes[x.value] = true 
           items.push(x)
@@ -101,7 +113,8 @@ class BinTree
     @left  = l
     @right = r
   end
-  def each(b)
+  # Metodo propio de each
+  def each
     yield self
     yield @left unless @left.nil?
     yield @right unless @right.nil?
@@ -116,7 +129,8 @@ class GraphNode
     @value    = v
     @children = c
   end
-  def each(b)
+  # Metodo propio de each
+  def each
     yield self
     @children.each {|x| yield x } unless @children.nil?
   end
@@ -124,28 +138,81 @@ end
 
 # Arboles Implicitos
 
-def LCR
+class LCR
   include Bfs
   attr_reader :value
-#   def initialize(?) # Indique los argumentos
-    # Su codigo aqui
-#   end
-  def each(p)
-    # Su codigo aqui
+  # Un estado del problema se modela con un hash con keys :where (donde esta
+  # el bote), :left (que hay en la orilla izquierda, y :right (que hay en la
+  # orilla derecha). Con los valores :repollo, :lobo, :cabra.
+  def initialize(w,l,r)
+    @value = {:where => w,
+              :left => l,
+              :right => r}
   end
-  def solve       
-    # Su codigo aqui
+  # Metodo para saber si un estado generado es valido para nuestro
+  # problema a resolver. I.e. la cabra no puede estar con el lobo en la 
+  # misma orilla sin el humano. Ademas mantiene que solo haya un elemento
+  # en cada orilla.
+  def is_valid?
+    if @value.has_value?([:cabra,:lobo]) || 
+       @value.has_value?([:cabra,:lobo]) ||
+       @value.has_value?([:lobo,:cabra]) ||
+       @value.has_value?([:lobo,:cabra]) ||
+       @value.has_value?([:cabra,:repollo]) || 
+       @value.has_value?([:cabra,:repollo]) ||
+       @value.has_value?([:repollo,:cabra]) || 
+       @value.has_value?([:repollo,:cabra]) ||
+       (@value[:left].include?(:lobo) && @value[:right].include?(:lobo)) ||
+       (@value[:left].include?(:cabra) && @value[:right].include?(:cabra)) ||
+       (@value[:left].include?(:repollo) && @value[:right].include?(:repollo))
+      return false
+    else
+      return true
+    end
+  end
+  # Metodo propio de each.
+  def each
+    # Self es valido
+    if is_valid?
+      # Movemos el barco a la orilla contraria solo o con algo
+      if @value[:where] == :izquierda
+        # Barco solo
+        barco = LCR.new(:derecha, @value[:left], @value[:right])
+        yield barco unless !(barco.is_valid?)
+        # Barco con algo
+        @value[:left].each do |x| barco = LCR.new(:derecha, 
+                                                  @value[:left].delete(x),
+                                                  @value[:right].push(x))
+          yield barco unless !(barco.is_valid?)
+        end
+      else 
+        # Barco solo
+        barco = LCR.new(:izquierda, @value[:left], @value[:right])
+        yield barco unless !(barco.is_valid?)
+        # Barco con algo
+        @value[:right].each do |x| barco = LCR.new(:izquierda, 
+                                                   @value[:left].push(x),
+                                                   @value[:right].delete(x))
+          yield barco unless !(barco.is_valid?)
+        end
+      end
+    end
+  end
+  # Dado el estado final del problema LCR, se busca el camino que proporcione
+  # la solucion al mismo.
+  def solve
+    final = lambda{|x| x[:right] == [:cabra,:lobo,:repollo] ||
+                    x[:right] == [:lobo,:repollo,:cabra] ||
+                    x[:right] ==[:cabra,:repollo,:lobo]}
+    result = self.path(self, final)
+    if result.nil?
+      puts "El problema no tiene solucion"
+    else
+      puts "El resultado al problema es"
+      puts result
+    end
   end
 end
 
-b = BinTree.new(5,BinTree.new(4, BinTree.new(3)))
-# b.each(1) {|x| puts x.value}
-res = b.find(b,4)
-puts res.value unless res.nil?
-puts b.path(b,3)
-puts b.walk(b,3)
-
-g = GraphNode.new(4, [GraphNode.new(3), GraphNode.new(2)])
-# g.each(1) {|x| puts x.value}
-res = g.find(g,8)
-puts res.value unless res.nil?
+l = LCR.new(:izquierda,[:lobo,:repollo,:cabra],[])
+l.solve
