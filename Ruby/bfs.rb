@@ -200,6 +200,8 @@ class LCR
   end
   # Dado el estado final del problema LCR, se busca el camino que proporcione
   # la solucion al mismo.
+  # NOTA: Este metodo tiene un bug ya que no resuelve el problema que se le
+  # plantea. Se intento corregir.
   def solve
     final = lambda{|x| x[:right] == [:cabra,:lobo,:repollo] ||
                     x[:right] == [:lobo,:repollo,:cabra] ||
@@ -213,6 +215,3 @@ class LCR
     end
   end
 end
-
-l = LCR.new(:izquierda,[:lobo,:repollo,:cabra],[])
-l.solve
